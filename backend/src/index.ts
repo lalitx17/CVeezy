@@ -6,6 +6,7 @@ import { monStatus, client } from './mongoServices';
 import { perplexityQuery } from "./perplexityApi"
 import { readJsonFile, fetchJobs } from "./jobsApi"
 import vectorRouter from './vectorConnector';
+import { monStatus } from './mongoServices.js';
 
 const app: Express = express();
 dotenv.config();
@@ -22,8 +23,6 @@ app.get('/', async (req: Request, res: Response) => {
 
 app.use(vectorRouter);
 
-app.post('/register', async (req: Request, res: Response) => {
-  const { username, password } = req.body;
 
   if (!username || !password) {
     res.status(400).json({ message: 'Username and password are required.' });
@@ -85,7 +84,6 @@ app.post('/login', async (req: Request, res: Response) => {
 
 
 
-monStatus().catch(console.dir);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

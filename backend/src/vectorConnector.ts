@@ -4,20 +4,23 @@ import { addDocumentWithEmbedding, searchSimilarDocuments } from './mongoService
 const vectorRouter: Router = express.Router();
 
 const addDocumentHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    const { text } = req.body;
-    if (!text) {
+    const { content, userId, subject } = req.body;
+    if (!content) {
         res.status(400).json({ error: 'Text is required' });
         return;
     }
 
     try {
-        const insertedId = await addDocumentWithEmbedding(text);
+        const insertedId = await addDocumentWithEmbedding(content, userId, subject);
         res.json({ message: 'Document added successfully', insertedId });
     } catch (error) {
         console.error('Error adding document:', error);
         res.status(500).json({ error: 'An error occurred while adding the document' });
     }
 };
+
+
+
 
 const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const { text, limit } = req.query;

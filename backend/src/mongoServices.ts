@@ -29,23 +29,25 @@ export async function monStatus() {
   }
 }
 
-export async function addDocumentWithEmbedding(text: string) {
+export async function addDocumentWithEmbedding(content: string, userId: string, subject:string) {
   try {
     await client.connect();
-    const db = client.db("your_database_name");
-    const collection = db.collection("your_collection_name");
+    const db = client.db("users");
+    const collection = db.collection("user_contents");
 
     // Generate embedding
     const embeddingResponse = await openai.embeddings.create({
       model: "text-embedding-ada-002",
-      input: text,
+      input: content,
     });
     const embedding = embeddingResponse.data[0].embedding;
 
     // Insert document with embedding
     const result = await collection.insertOne({
-      text: text,
+      content: content,
       embedding: embedding,
+      userId: userId, 
+      subject: subject
     });
 
     console.log(`Document inserted with _id: ${result.insertedId}`);
@@ -60,8 +62,8 @@ export async function addDocumentWithEmbedding(text: string) {
 export async function searchSimilarDocuments(queryText: string, limit: number = 5) {
   try {
     await client.connect();
-    const db = client.db("your_database_name");
-    const collection = db.collection("your_collection_name");
+    const db = client.db("users");
+    const collection = db.collection("users_contents");
 
 
     const embeddingResponse = await openai.embeddings.create({
