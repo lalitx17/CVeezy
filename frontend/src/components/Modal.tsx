@@ -18,8 +18,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, job, onGenerateCV }) => 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[80vh] overflow-hidden">
-        <h2 className="text-xl font-bold mb-4">{job.title}</h2>
+      <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] w-[1000px] overflow-hidden">
+        <h2 className="text-xl font-bold mb-4 w-[1000px]">{job.title}</h2>
         <h3 className="text-lg mb-2">{job.company}</h3>
         
         {/* Scrollable area for job description */}

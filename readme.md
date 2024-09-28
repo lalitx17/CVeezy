@@ -5,7 +5,7 @@
 # LLM use:
 1. perplexity API [x]
 2. give as markdown [ ]
-3. edit markdown [ ]
+3. edit markdown [x]
 4. export to PDF [ ]
 
 # Frontend:
@@ -13,5 +13,5 @@
 2. user management [x]
 3. text submit [ ]
 4. AI response [ ]
-5. render markdown [ ]
+5. render markdown [x]
 6. generate PDF [ ]
