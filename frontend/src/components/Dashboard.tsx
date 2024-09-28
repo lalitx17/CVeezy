@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import JobSearch from './JobSearch.tsx';
 import ContentUpload from './ContentUpload.tsx';
-import MarkdownEditor from './MarkdownEditor.tsx'
+import MarkdownEditor from './MarkdownEditor.tsx';
 
 const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('job-search');
@@ -13,10 +13,11 @@ const Dashboard: React.FC = () => {
       case 'content-upload':
         return <ContentUpload />;
       default:
-        return <MarkdownEditor />
+        return <MarkdownEditor />;
     }
   };
 
+  
   return (
     <div>
       <nav className="flex justify-around bg-gray-800 p-4 text-white">

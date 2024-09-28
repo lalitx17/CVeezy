@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { remark } from 'remark';
-import gfm from 'remark-gfm';
+import axios from 'axios';
 
 const MarkdownEditor: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -9,6 +8,23 @@ const MarkdownEditor: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
   };
+
+  const handleExportPDF = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/export-pdf', {
+        inputText,
+      });
+
+      if (response.status === 200) {
+        console.log(response.data.message);
+        alert("PDF export initiated successfully!");
+      }
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert("Failed to export PDF.");
+    }
+  };
+
 
   return (
     <div className="flex flex-col items-center">
@@ -23,9 +39,15 @@ const MarkdownEditor: React.FC = () => {
         <h3 className="text-lg font-semibold mb-2">Preview</h3>
         <ReactMarkdown
           children={inputText}
-          remarkPlugins={[gfm]} // Add the remark-gfm plugin here
         />
       </div>
+      <button
+        onClick={handleExportPDF}
+        className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded text-lg"
+      >
+        Export to PDF
+      </button>
+
     </div>
   );
 };

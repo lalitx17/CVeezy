@@ -5,6 +5,7 @@ import cors from 'cors';
 import { client } from './mongoServices';
 import { perplexityQuery } from "./perplexityApi"
 import { readJsonFile, fetchJobs } from "./jobsApi"
+import { generatePDF } from "./exportPdf"
 import vectorRouter from './vectorConnector';
 
 const app: Express = express();
@@ -36,6 +37,7 @@ app.use(vectorRouter);
     const existingUser = await client.db('users').collection('users').findOne({ username });
     if (existingUser) {
       res.status(400).json({ message: 'Username already exists' });
+      return
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -59,6 +61,7 @@ app.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(400).json({ message: 'Username and password are required.' });
+    return
   }
 
   try {
@@ -73,6 +76,7 @@ app.post('/login', async (req: Request, res: Response) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       res.status(400).json({ message: 'Invalid username or password' });
+      return
     }
 
     res.json({ message: 'Login successful' });
@@ -88,10 +92,23 @@ app.post('/jobs', async (req: Request, res: Response) => {
     const q = req.query.q
     if (!q) {
       res.status(400).json({ message: 'Query required' });
+      return
     }
     const result = await readJsonFile()
     res.json(result)
 });
+
+app.post('/export-pdf', async (req: Request, res: Response) => {
+  const filename : string = "./test.pdf"
+  const { inputText } = req.body;
+  if(!inputText){
+    res.status(400).json({message: "Content is required"})
+    return
+  }
+  console.log(inputText)
+  generatePDF(inputText, filename);
+  res.status(200).json({message: "Success"})
+})
 
 
 app.listen(port, () => {
