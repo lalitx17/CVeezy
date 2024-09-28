@@ -1,5 +1,9 @@
 import express, { Express, Request, Response } from 'express';
+import * as dotenv from "dotenv";
+dotenv.config();
 import { monStatus } from './mongoStatus';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -105,7 +109,6 @@ const fetchJobs = async () => {
       })
     });
 
-    // Check if the response is OK
     if (!response.ok) {
       const result = await response.json();
       console.log(result);
@@ -114,19 +117,34 @@ const fetchJobs = async () => {
 
     const body = await response.json(); // Convert response to JSON
     return body;
-  } catch (error) {
+  } catch (error : any) {
     console.error('Fetch error:', error.message);
   }
 };
 
-import * as dotenv from "dotenv";
-dotenv.config();
 
+const readJsonFile = (): Promise<any> => {
+  const filePath = path.join(__dirname, 'cache.json');
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err : any, data : string) => {
+      if (err) {
+        return reject(err);
+      }
+      try {
+        const jsonData = JSON.parse(data);
+        resolve(jsonData);
+      } catch (parseError) {
+        reject(parseError);
+      }
+    });
+  });
+};
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+app.get('/', async (req: Request, res: Response) => {
+  const result : any = await readJsonFile();
+  res.json(result);
 });
 
 monStatus().catch(console.dir);
