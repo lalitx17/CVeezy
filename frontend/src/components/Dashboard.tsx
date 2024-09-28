@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import JobSearch from './JobSearch.tsx';
 import ContentUpload from './ContentUpload.tsx';
+import MarkdownEditor from './MarkdownEditor.tsx'
 
 const Dashboard: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('dashboard');
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('job-search');
 
   const renderContent = () => {
     switch (currentPage) {
@@ -12,12 +13,7 @@ const Dashboard: React.FC = () => {
       case 'content-upload':
         return <ContentUpload />;
       default:
-        return (
-          <div className='my-10'>
-            <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
-            <p className="mt-4">Select a page from the navigation bar to get started.</p>
-          </div>
-        );
+        return <MarkdownEditor />
     }
   };
 
