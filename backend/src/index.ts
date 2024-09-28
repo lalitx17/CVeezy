@@ -2,8 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import * as dotenv from "dotenv";
 import cors from 'cors';
-import { monStatus } from './mongoStatus';
-import { readJsonFile, fetchJobs, perplexityQuery } from "./api"
+import { monStatus, client } from './mongoStatus';
+import { perplexityQuery } from "./perplexityApi.ts"
+import { readJsonFile, fetchJobs } from "./jobsApi.ts"
 
 const app: Express = express();
 dotenv.config();
@@ -28,14 +29,14 @@ app.post('/submit', (req, res) => {
 app.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-  const existingUser = await client.db('your_database_name').collection('users').findOne({ username });
+  const existingUser = await client.db('users').collection('users').findOne({ username });
   if (existingUser) {
     return res.status(400).json({ message: 'Username already exists' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await client.db('your_database_name').collection('users').insertOne({
+  await client.db('users').collection('users').insertOne({
     username,
     password: hashedPassword
   });
@@ -46,7 +47,7 @@ app.post('/register', async (req: Request, res: Response) => {
 app.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-  const user = await client.db('your_database_name').collection('users').findOne({ username });
+  const user = await client.db('users').collection('users').findOne({ username });
   if (!user) {
     return res.status(400).json({ message: 'Invalid username or password' });
   }
