@@ -2,9 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import * as dotenv from "dotenv";
 import cors from 'cors';
-import { monStatus, client } from './mongoStatus';
-import { perplexityQuery } from "./perplexityApi.ts"
-import { readJsonFile, fetchJobs } from "./jobsApi.ts"
+import { monStatus, client } from './mongoServices';
+import { perplexityQuery } from "./perplexityApi"
+import { readJsonFile, fetchJobs } from "./jobsApi"
 import vectorRouter from './vectorConnector';
 
 const app: Express = express();
@@ -25,35 +25,62 @@ app.use(vectorRouter);
 app.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-  const existingUser = await client.db('users').collection('users').findOne({ username });
-  if (existingUser) {
-    return res.status(400).json({ message: 'Username already exists' });
+  if (!username || !password) {
+    res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    await client.connect();
+    
+    const existingUser = await client.db('users').collection('users').findOne({ username });
+    if (existingUser) {
+      res.status(400).json({ message: 'Username already exists' });
+    }
 
-  await client.db('users').collection('users').insertOne({
-    username,
-    password: hashedPassword
-  });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  res.status(201).json({ message: 'User registered successfully' });
+    await client.db('users').collection('users').insertOne({
+      username,
+      password: hashedPassword,
+      createdAt: new Date(), // Optional: timestamp
+    });
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
 });
 
 app.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
-
-  const user = await client.db('users').collection('users').findOne({ username });
-  if (!user) {
-    return res.status(400).json({ message: 'Invalid username or password' });
+  if (!username || !password) {
+    res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    return res.status(400).json({ message: 'Invalid username or password' });
-  }
+  try {
+    await client.connect();
 
-  res.json({ message: 'Login successful' });
+    const user = await client.db('users').collection('users').findOne({ username });
+    if (!user) {
+      res.status(400).json({ message: 'Invalid username or password' });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      res.status(400).json({ message: 'Invalid username or password' });
+    }
+
+    res.json({ message: 'Login successful' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
 });
 
 
