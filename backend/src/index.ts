@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from 'express';
+import { monStatus } from './mongoStatus';
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -118,12 +119,20 @@ const fetchJobs = async () => {
   }
 };
 
+import * as dotenv from "dotenv";
+dotenv.config();
+
+
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
+monStatus().catch(console.dir);
+
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(`Server is running at http://localhost:${port}`);
 });
+
+
