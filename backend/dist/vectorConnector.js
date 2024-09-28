@@ -28,14 +28,15 @@ const addDocumentHandler = (req, res, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { text, limit } = req.query;
-    if (!text || typeof text !== 'string') {
+    const { content } = req.body;
+    console.log(req.body);
+    if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
     }
-    const limitNumber = limit ? parseInt(limit) : 5;
+    const limitNumber = 5;
     try {
-        const results = yield (0, mongoServices_1.searchSimilarDocuments)(text, limitNumber);
+        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, limitNumber);
         res.json(results);
     }
     catch (error) {
@@ -44,5 +45,5 @@ const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void
     }
 });
 vectorRouter.post('/add-document', addDocumentHandler);
-vectorRouter.get('/query', queryDocumentsHandler);
+vectorRouter.post('/query', queryDocumentsHandler);
 exports.default = vectorRouter;

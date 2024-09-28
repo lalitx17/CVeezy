@@ -44,7 +44,7 @@ const uri = `mongodb+srv://lalitx17:${process.env.MONGODB_PASSWORD}@cluster0.c36
 exports.client = new mongodb_1.MongoClient(uri, {
     serverApi: {
         version: mongodb_1.ServerApiVersion.v1,
-        strict: true,
+        strict: false,
         deprecationErrors: true,
     }
 });
@@ -64,24 +64,39 @@ function monStatus() {
 function addDocumentWithEmbedding(content, userId, subject) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // Check if content is empty or undefined
+            if (!content || content.trim() === '') {
+                throw new Error("Content cannot be empty");
+            }
             yield exports.client.connect();
             const db = exports.client.db("users");
-            const collection = db.collection("user_contents");
+            const collection = db.collection("userContents");
             // Generate embedding
-            const embeddingResponse = yield openai.embeddings.create({
-                model: "text-embedding-ada-002",
-                input: content,
-            });
-            const embedding = embeddingResponse.data[0].embedding;
+            let embedding;
+            try {
+                const embeddingResponse = yield openai.embeddings.create({
+                    model: "text-embedding-ada-002",
+                    input: content.trim(), // Ensure content is trimmed
+                });
+                embedding = embeddingResponse.data[0].embedding;
+            }
+            catch (error) {
+                console.error("Error generating embedding:", error);
+                throw error; // Re-throw to be caught by the outer try-catch
+            }
             // Insert document with embedding
             const result = yield collection.insertOne({
                 content: content,
-                embedding: embedding,
+                embeddings: embedding,
                 userId: userId,
                 subject: subject
             });
             console.log(`Document inserted with _id: ${result.insertedId}`);
             return result.insertedId;
+        }
+        catch (error) {
+            console.error("Error adding document:", error);
+            throw error; // Re-throw the error to be handled by the caller
         }
         finally {
             yield exports.client.close();
@@ -93,18 +108,18 @@ function searchSimilarDocuments(queryText_1) {
         try {
             yield exports.client.connect();
             const db = exports.client.db("users");
-            const collection = db.collection("users_contents");
+            const collection = db.collection("userContents");
             const embeddingResponse = yield openai.embeddings.create({
                 model: "text-embedding-ada-002",
                 input: queryText,
             });
             const queryEmbedding = embeddingResponse.data[0].embedding;
-            // Perform vector search
+            console.log("Query embedding generated successfully");
             const results = yield collection.aggregate([
                 {
                     $vectorSearch: {
-                        index: "default",
-                        path: "embedding",
+                        index: "vectorsearch",
+                        path: "embeddings",
                         queryVector: queryEmbedding,
                         numCandidates: 100,
                         limit: limit
@@ -112,12 +127,28 @@ function searchSimilarDocuments(queryText_1) {
                 },
                 {
                     $project: {
-                        text: 1,
+                        content: 1,
+                        userId: 1,
+                        subject: 1,
                         score: { $meta: "vectorSearchScore" }
                     }
                 }
             ]).toArray();
+            console.log(`Found ${results.length} similar documents`);
+            // Format and log the results
+            results.forEach((doc, index) => {
+                console.log(`Document ${index + 1}:`);
+                console.log(`Content: ${doc.content}`);
+                console.log(`User ID: ${doc.userId}`);
+                console.log(`Subject: ${doc.subject}`);
+                console.log(`Similarity Score: ${doc.score}`);
+                console.log('---');
+            });
             return results;
+        }
+        catch (error) {
+            console.error("Error in searchSimilarDocuments:", error);
+            throw error;
         }
         finally {
             yield exports.client.close();

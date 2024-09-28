@@ -7,6 +7,7 @@ import { perplexityQuery } from "./perplexityApi"
 import { readJsonFile, fetchJobs } from "./jobsApi"
 import { generatePDF } from "./exportPdf"
 import vectorRouter from './vectorConnector';
+import { createUserContentsCollection } from './createCollection';
 
 const app: Express = express();
 dotenv.config();

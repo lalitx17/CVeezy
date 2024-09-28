@@ -20,16 +20,17 @@ const addDocumentHandler: RequestHandler = async (req: Request, res: Response, n
 
 
 const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    const { text, limit } = req.query;
-    if (!text || typeof text !== 'string') {
+    const { content } = req.body;
+    console.log(req.body);
+    if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
     }
 
-    const limitNumber = limit ? parseInt(limit as string) : 5;
+    const limitNumber = 5;
 
     try {
-        const results = await searchSimilarDocuments(text, limitNumber);
+        const results = await searchSimilarDocuments(content, limitNumber);
         res.json(results);
     } catch (error) {
         console.error('Error querying documents:', error);
@@ -38,6 +39,6 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
 };
 
 vectorRouter.post('/add-document', addDocumentHandler);
-vectorRouter.get('/query', queryDocumentsHandler);
+vectorRouter.post('/query', queryDocumentsHandler);
 
 export default vectorRouter;

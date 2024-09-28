@@ -2,9 +2,11 @@ import { useState } from 'react';
 import JobSearch from './JobSearch.tsx';
 import ContentUpload from './ContentUpload.tsx';
 import MarkdownEditor from './MarkdownEditor.tsx';
+import Query from './query.tsx';
 
 const Dashboard: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('job-search');
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'| "query">('dashboard');
+
 
   const renderContent = () => {
     switch (currentPage) {
@@ -12,6 +14,8 @@ const Dashboard: React.FC = () => {
         return <JobSearch />;
       case 'content-upload':
         return <ContentUpload />;
+      case 'query':
+        return <Query/>;
       default:
         return <MarkdownEditor />;
     }
@@ -38,6 +42,12 @@ const Dashboard: React.FC = () => {
           className="hover:underline"
         >
           Content Upload
+        </button>
+        <button
+          onClick={() => setCurrentPage('query')}
+          className="hover:underline"
+        >
+          query
         </button>
       </nav>
 
