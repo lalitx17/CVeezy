@@ -1,22 +1,23 @@
 import express, { Express, Request, Response } from 'express';
 import * as dotenv from "dotenv";
-dotenv.config();
+import cors from 'cors';
 import { monStatus } from './mongoStatus';
-import { readJsonFile, fetchJobs } from "./api"
+import { readJsonFile, fetchJobs, perplexityQuery } from "./api"
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
-const jobsApiKey : string = process.env.API_KEY || "";
-import cors from 'cors';
-
-
+dotenv.config();
 app.use(cors());
-
 app.use(express.json());
 
+const port = process.env.PORT || 3000;
+const jobsApiKey : string = process.env.API_KEY || "";
+const perplexityApiKey : string = process.env.PERPLEXITY_API_KEY || "";
+
 app.get('/', async (req: Request, res: Response) => {
-  const result : any = await readJsonFile();
-  res.json(result);
+  //const result : any = await readJsonFile();
+  //res.json(result);
+  const result : any = await perplexityQuery(perplexityApiKey, "Give me a testing response");
+  res.json(result)
 });
 
 app.post('/submit', (req, res) => {

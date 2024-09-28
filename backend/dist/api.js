@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchJobs = exports.readJsonFile = void 0;
+exports.fetchJobs = exports.perplexityQuery = exports.readJsonFile = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const readJsonFile = () => {
@@ -53,6 +53,52 @@ const readJsonFile = () => {
     });
 };
 exports.readJsonFile = readJsonFile;
+const perplexityQuery = (apiKey, perplexityQuery) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield fetch('https://api.perplexity.ai/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.1-sonar-large-128k-online",
+                messages: [
+                    {
+                        role: "system",
+                        content: "Be precise and concise."
+                    },
+                    {
+                        role: "user",
+                        content: perplexityQuery
+                    }
+                ],
+                temperature: 0.2,
+                top_p: 0.9,
+                return_citations: false,
+                search_domain_filter: ["perplexity.ai"],
+                return_images: false,
+                return_related_questions: false,
+                search_recency_filter: "month",
+                top_k: 0,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 1
+            })
+        });
+        if (!response.ok) {
+            const result = yield response.json();
+            console.log(result);
+            throw new Error(`Error: ${response.status}`);
+        }
+        const body = yield response.json(); // Convert response to JSON
+        return body;
+    }
+    catch (error) {
+        console.error('Fetch error:', error.message);
+    }
+});
+exports.perplexityQuery = perplexityQuery;
 const fetchJobs = (apiKey) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield fetch('https://api.theirstack.com/v1/jobs/search', {
