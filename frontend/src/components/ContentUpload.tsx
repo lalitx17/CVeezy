@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const ContentUpload: React.FC = () => {
+  const [subject, setSubject] = useState('');
   const [inputText, setInputText] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/submit', { text: inputText });
+      const response = await axios.post('http://localhost:3000/add-document', {
+        subject: subject,
+        text: inputText,
+        userId: "abacdns12"
+      });
       console.log('Response from server:', response.data);
+      setSubject('');
       setInputText('');
     } catch (error) {
       console.error('Error sending data to server:', error);
@@ -19,6 +25,13 @@ const ContentUpload: React.FC = () => {
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-4">Upload Your Content</h2>
       <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+        <input
+          type="text"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full mb-4 focus:ring focus:ring-blue-500"
+          placeholder="Enter subject..."
+        />
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}

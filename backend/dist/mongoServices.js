@@ -32,6 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.client = void 0;
 exports.monStatus = monStatus;
 exports.addDocumentWithEmbedding = addDocumentWithEmbedding;
 exports.searchSimilarDocuments = searchSimilarDocuments;
@@ -40,7 +41,7 @@ const dotenv = __importStar(require("dotenv"));
 const openai_1 = require("openai");
 dotenv.config();
 const uri = `mongodb+srv://lalitx17:${process.env.MONGODB_PASSWORD}@cluster0.c36pc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const client = new mongodb_1.MongoClient(uri, {
+exports.client = new mongodb_1.MongoClient(uri, {
     serverApi: {
         version: mongodb_1.ServerApiVersion.v1,
         strict: true,
@@ -51,20 +52,20 @@ const openai = new openai_1.OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 function monStatus() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield client.connect();
-            yield client.db("admin").command({ ping: 1 });
+            yield exports.client.connect();
+            yield exports.client.db("admin").command({ ping: 1 });
             console.log("Pinged your deployment. You successfully connected to MongoDB!");
         }
         finally {
-            yield client.close();
+            yield exports.client.close();
         }
     });
 }
 function addDocumentWithEmbedding(content, userId, subject) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield client.connect();
-            const db = client.db("users");
+            yield exports.client.connect();
+            const db = exports.client.db("users");
             const collection = db.collection("user_contents");
             // Generate embedding
             const embeddingResponse = yield openai.embeddings.create({
@@ -83,15 +84,15 @@ function addDocumentWithEmbedding(content, userId, subject) {
             return result.insertedId;
         }
         finally {
-            yield client.close();
+            yield exports.client.close();
         }
     });
 }
 function searchSimilarDocuments(queryText_1) {
     return __awaiter(this, arguments, void 0, function* (queryText, limit = 5) {
         try {
-            yield client.connect();
-            const db = client.db("users");
+            yield exports.client.connect();
+            const db = exports.client.db("users");
             const collection = db.collection("users_contents");
             const embeddingResponse = yield openai.embeddings.create({
                 model: "text-embedding-ada-002",
@@ -119,7 +120,7 @@ function searchSimilarDocuments(queryText_1) {
             return results;
         }
         finally {
-            yield client.close();
+            yield exports.client.close();
         }
     });
 }

@@ -36,10 +36,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-// import { perplexityQuery } from "./perplexityApi.ts"
-// import { readJsonFile, fetchJobs } from "./jobsApi.ts"
+const mongoServices_1 = require("./mongoServices");
 const vectorConnector_1 = __importDefault(require("./vectorConnector"));
 const app = (0, express_1.default)();
 dotenv.config();
@@ -52,31 +52,60 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json({ message: "everything works fine" });
 }));
 app.use(vectorConnector_1.default);
-// app.post('/register', async (req: Request, res: Response) => {
-//   const { username, password } = req.body;
-//   const existingUser = await client.db('users').collection('users').findOne({ username });
-//   if (existingUser) {
-//     return res.status(400).json({ message: 'Username already exists' });
-//   }
-//   const hashedPassword = await bcrypt.hash(password, 10);
-//   await client.db('users').collection('users').insertOne({
-//     username,
-//     password: hashedPassword
-//   });
-//   res.status(201).json({ message: 'User registered successfully' });
-// });
-// app.post('/login', async (req: Request, res: Response) => {
-//   const { username, password } = req.body;
-//   const user = await client.db('users').collection('users').findOne({ username });
-//   if (!user) {
-//     return res.status(400).json({ message: 'Invalid username or password' });
-//   }
-//   const isPasswordValid = await bcrypt.compare(password, user.password);
-//   if (!isPasswordValid) {
-//     return res.status(400).json({ message: 'Invalid username or password' });
-//   }
-//   res.json({ message: 'Login successful' });
-// });
+app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).json({ message: 'Username and password are required.' });
+        return;
+    }
+    try {
+        yield mongoServices_1.client.connect();
+        const existingUser = yield mongoServices_1.client.db('users').collection('users').findOne({ username });
+        if (existingUser) {
+            res.status(400).json({ message: 'Username already exists' });
+        }
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+        yield mongoServices_1.client.db('users').collection('users').insertOne({
+            username,
+            password: hashedPassword,
+            createdAt: new Date(), // Optional: timestamp
+        });
+        res.status(201).json({ message: 'User registered successfully' });
+    }
+    catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+    finally {
+        yield mongoServices_1.client.close();
+    }
+}));
+app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).json({ message: 'Username and password are required.' });
+    }
+    try {
+        yield mongoServices_1.client.connect();
+        const user = yield mongoServices_1.client.db('users').collection('users').findOne({ username });
+        if (!user) {
+            res.status(400).json({ message: 'Invalid username or password' });
+            return;
+        }
+        const isPasswordValid = yield bcrypt_1.default.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(400).json({ message: 'Invalid username or password' });
+        }
+        res.json({ message: 'Login successful' });
+    }
+    catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+    finally {
+        yield mongoServices_1.client.close();
+    }
+}));
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });

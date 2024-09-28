@@ -2,11 +2,10 @@ import express, { Express, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import * as dotenv from "dotenv";
 import cors from 'cors';
-import { monStatus, client } from './mongoServices';
+import { client } from './mongoServices';
 import { perplexityQuery } from "./perplexityApi"
 import { readJsonFile, fetchJobs } from "./jobsApi"
 import vectorRouter from './vectorConnector';
-import { monStatus } from './mongoServices.js';
 
 const app: Express = express();
 dotenv.config();
@@ -24,10 +23,14 @@ app.get('/', async (req: Request, res: Response) => {
 app.use(vectorRouter);
 
 
-  if (!username || !password) {
-    res.status(400).json({ message: 'Username and password are required.' });
-  }
+  app.post('/register', async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      res.status(400).json({ message: 'Username and password are required.' });
+      return;
+    }
 
+    
   try {
     await client.connect();
     

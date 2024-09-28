@@ -5,10 +5,7 @@ const vectorRouter: Router = express.Router();
 
 const addDocumentHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const { content, userId, subject } = req.body;
-    if (!content) {
-        res.status(400).json({ error: 'Text is required' });
-        return;
-    }
+    console.log(req.body);
 
     try {
         const insertedId = await addDocumentWithEmbedding(content, userId, subject);

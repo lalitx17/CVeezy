@@ -17,10 +17,7 @@ const mongoServices_1 = require("./mongoServices");
 const vectorRouter = express_1.default.Router();
 const addDocumentHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { content, userId, subject } = req.body;
-    if (!content) {
-        res.status(400).json({ error: 'Text is required' });
-        return;
-    }
+    console.log(req.body);
     try {
         const insertedId = yield (0, mongoServices_1.addDocumentWithEmbedding)(content, userId, subject);
         res.json({ message: 'Document added successfully', insertedId });
