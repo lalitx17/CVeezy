@@ -1,27 +1,62 @@
 import { useState } from 'react';
 
 const Login = ({ setAuthenticated }) => {
-     const [isRegistering, setIsRegistering] = useState(false);
+    const [isRegistering, setIsRegistering] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleLoginSubmit = (e) => {
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
         if (username && password) {
-            // Simulate login
-            setAuthenticated();
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setAuthenticated();
+                    console.log(data.message); // Success message
+                } else {
+                    setError(data.message || 'Login failed');
+                }
+            } catch (err) {
+                console.error('Error during login:', err);
+                setError('An error occurred during login');
+            }
         }
     };
 
-    const handleRegisterSubmit = (e) => {
+    const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         if (username && password && password === confirmPassword) {
-            // Simulate registration logic here
-            console.log('User registered:', { username, password });
-            setAuthenticated();
+            try {
+                const response = await fetch('http://localhost:3000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setAuthenticated();
+                    console.log(data.message); // Success message
+                } else {
+                    setError(data.message || 'Registration failed');
+                }
+            } catch (err) {
+                console.error('Error during registration:', err);
+                setError('An error occurred during registration');
+            }
         } else {
             console.error('Passwords do not match');
+            setError('Passwords do not match');
         }
     };
 
@@ -31,6 +66,7 @@ const Login = ({ setAuthenticated }) => {
                 <h2 className="text-2xl font-bold text-center mb-6">
                     {isRegistering ? 'Register' : 'Login'}
                 </h2>
+                {error && <p className="text-red-500 text-center">{error}</p>}
                 {isRegistering ? (
                     <form onSubmit={handleRegisterSubmit}>
                         <div className="mb-4">

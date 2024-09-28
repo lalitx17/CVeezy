@@ -1,37 +1,52 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import JobSearch from './JobSearch.tsx';
+import ContentUpload from './ContentUpload.tsx';
 
-const Dashboard = () => {
-  const [inputText, setInputText] = useState('');
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3000/submit', { text: inputText });
-      console.log('Response from server:', response.data);
-    } catch (error) {
-      console.error('Error sending data to server:', error);
+const Dashboard: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('dashboard');
+
+  const renderContent = () => {
+    switch (currentPage) {
+      case 'job-search':
+        return <JobSearch />;
+      case 'content-upload':
+        return <ContentUpload />;
+      default:
+        return (
+          <div className='my-10'>
+            <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
+            <p className="mt-4">Select a page from the navigation bar to get started.</p>
+          </div>
+        );
     }
   };
 
   return (
-    <>
-    <div className='my-10'>
-      <form onSubmit={handleSubmit} className="flex flex-col items-center w-full max-w-2xl mx-auto">
-        <textarea
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 mb-4 w-full h-64 resize-none"
-          placeholder="Enter text here"
-        />
+    <div>
+      <nav className="flex justify-around bg-gray-800 p-4 text-white">
         <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
+          onClick={() => setCurrentPage('dashboard')}
+          className="hover:underline"
         >
-          Submit
+          Dashboard
         </button>
-      </form>
-      </div>
-    </>
-  );
-}
+        <button
+          onClick={() => setCurrentPage('job-search')}
+          className="hover:underline"
+        >
+          Job Search
+        </button>
+        <button
+          onClick={() => setCurrentPage('content-upload')}
+          className="hover:underline"
+        >
+          Content Upload
+        </button>
+      </nav>
 
-export default Dashboard
+      {renderContent()}
+    </div>
+  );
+};
+
+export default Dashboard;
