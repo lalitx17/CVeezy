@@ -8,7 +8,7 @@ const JobSearch: React.FC = () => {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:3000/jobs?query=${jobQuery}`);
+      const response = await axios.post(`http://localhost:3000/jobs?q=${jobQuery}`);
       setResults(response.data); // Assuming the response contains job results
     } catch (error) {
       console.error('Error fetching job results:', error);

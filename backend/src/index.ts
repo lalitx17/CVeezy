@@ -29,11 +29,10 @@ app.use(vectorRouter);
       res.status(400).json({ message: 'Username and password are required.' });
       return;
     }
-
     
   try {
     await client.connect();
-    
+
     const existingUser = await client.db('users').collection('users').findOne({ username });
     if (existingUser) {
       res.status(400).json({ message: 'Username already exists' });
@@ -83,6 +82,15 @@ app.post('/login', async (req: Request, res: Response) => {
   } finally {
     await client.close();
   }
+});
+
+app.post('/jobs', async (req: Request, res: Response) => {
+    const q = req.query.q
+    if (!q) {
+      res.status(400).json({ message: 'Query required' });
+    }
+    const result = await readJsonFile()
+    res.json(result)
 });
 
 
