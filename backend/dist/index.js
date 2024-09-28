@@ -43,11 +43,18 @@ const api_1 = require("./api");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const jobsApiKey = process.env.API_KEY || "";
+const cors_1 = __importDefault(require("cors"));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield (0, api_1.readJsonFile)();
     res.json(result);
 }));
+app.post('/submit', (req, res) => {
+    const { text } = req.body;
+    console.log('Received text:', text);
+    res.json({ message: 'Data received successfully' });
+});
 (0, mongoStatus_1.monStatus)().catch(console.dir);
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
