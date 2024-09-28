@@ -5,6 +5,7 @@ import cors from 'cors';
 import { monStatus, client } from './mongoStatus';
 import { perplexityQuery } from "./perplexityApi.ts"
 import { readJsonFile, fetchJobs } from "./jobsApi.ts"
+import vectorRouter from './vectorConnector';
 
 const app: Express = express();
 dotenv.config();
@@ -19,12 +20,7 @@ app.get('/', async (req: Request, res: Response) => {
   res.json({message: "everything works fine"})
 });
 
-app.post('/submit', (req, res) => {
-    const { text } = req.body;
-    console.log('Received text:', text);
-    res.json({ message: 'Data received successfully' });
-  });
-
+app.use(vectorRouter);
 
 app.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;

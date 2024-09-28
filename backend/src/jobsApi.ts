@@ -18,10 +18,6 @@ export const readJsonFile = (): Promise<any> => {
   });
 };
 
-
-
-
-
 export const fetchJobs = async (apiKey: string) => {
   try {
     const response = await fetch('https://api.theirstack.com/v1/jobs/search', {
