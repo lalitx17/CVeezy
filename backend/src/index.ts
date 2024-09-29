@@ -16,7 +16,6 @@ app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
-const jobsApiKey : string = process.env.API_KEY || "";
 
 
 app.use(express.static(path.join(__dirname, '../../frontend/dist/')));

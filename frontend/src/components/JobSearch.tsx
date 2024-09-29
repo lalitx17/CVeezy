@@ -30,9 +30,12 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
     e.preventDefault();
     try {
       const response = await axios.post(
-        `http://localhost:3000/jobs?q=${jobQuery}`
+        `http://localhost:3000/jobs`,
+        {
+          q: jobQuery
+        }
       );
-      setResults(response.data); // Assuming the response contains job results
+      setResults(response.data.data); // Assuming the response contains job results
     } catch (error) {
       console.error("Error fetching job results:", error);
     }
