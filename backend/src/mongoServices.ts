@@ -132,16 +132,19 @@ export async function searchSimilarDocuments(queryText: string, userId: string, 
   }
 }
 
-export async function generateCV(content: string, userId: string){
+export async function generateCV(content: string, userId: string, company: string, title: string){
   const contents = await searchSimilarDocuments(content, userId);
   if(contents.length > 0){
     const userContent : string = contents[0]
     const perplexityQ = `
 Make me cover letter with for the following job:
 ${content}
+The company name is ${company} and the job title is: ${title}
 given my skills outlined by:
 ${userContent}
-Give me only the cover letter, be concise
+Give me only the cover letter, be concise, do not include special characters like '*'
+Fill in every field possible
+Include the date: ${new Date().toString()}
 `
   const result = await perplexityQuery(perplexityQ);
   return result;

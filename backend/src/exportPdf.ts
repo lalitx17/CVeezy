@@ -8,30 +8,47 @@ const generatePDF = async (markdownText: string) => {
 
   const fontSize = 15;
   const margin = 50;
-  const lineHeight = fontSize + 4;
+  const lineHeight = fontSize + 10;
 
-  const lines = splitTextIntoLines(markdownText, timesRomanFont, fontSize, 80); // A4 width minus margins
+  const lines = markdownText.split('\n')
 
   let page = pdfDoc.addPage([595, 842]);
   const { height } = page.getSize();
   let y = height - margin;
 
   lines.forEach((line : string) => {
-    if (y - lineHeight < margin) {
-      page = pdfDoc.addPage([595, 842]);
-      y = height - margin;
+    const new_lines = splitTextIntoLines(line, timesRomanFont, fontSize, 75);
+    if(new_lines.length > 1){
+      new_lines.forEach((new_line: string) => {
+        if (y - lineHeight < margin) {
+          page = pdfDoc.addPage([595, 842]);
+          y = height - margin;
+        }
+        page.drawText(new_line, {
+          x: margin,
+          y: y,
+          size: fontSize,
+          font: timesRomanFont,
+          color: rgb(0, 0, 0),
+        });
+        y -= lineHeight;
+      });
+    } else {
+        if (y - lineHeight < margin) {
+          page = pdfDoc.addPage([595, 842]);
+          y = height - margin;
+        }
+      page.drawText(line, {
+        x: margin,
+        y: y,
+        size: fontSize,
+        font: timesRomanFont,
+        color: rgb(0, 0, 0),
+      });
+      y -= lineHeight;
     }
 
-    page.drawText(line, {
-      x: margin,
-      y: y,
-      size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0, 0),
     });
-
-    y -= lineHeight;
-  });
 
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
@@ -48,13 +65,13 @@ const splitTextIntoLines = (
   let currentLine = '';
 
   words.forEach((word : string) => {
-    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const testLine = currentLine ? currentLine + ' ' + word : word;
 
     if (testLine.length <= maxWidth) {
-      currentLine = testLine; // Add word to current line if it fits
+      currentLine = testLine;
     } else {
-      lines.push(currentLine); // Push the current line and start a new one
-      currentLine = word; // Start a new line with the word
+      lines.push(currentLine);
+      currentLine = word;
     }
   });
 
@@ -64,6 +81,7 @@ const splitTextIntoLines = (
 
   return lines;
 };
+
 
 
 const pdfRouter: Router = express.Router();

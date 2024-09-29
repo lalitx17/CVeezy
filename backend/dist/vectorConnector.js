@@ -28,18 +28,14 @@ const addDocumentHandler = (req, res, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { content, userId } = req.body;
+    const { content, userId, company, title } = req.body;
     console.log(req.body);
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
     }
     try {
-<<<<<<< HEAD
-        const results = yield (0, mongoServices_1.generateCV)(content, userId);
-=======
-        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
->>>>>>> 2d7f33b (some changes)
+        const results = yield (0, mongoServices_1.generateCV)(content, userId, company, title);
         res.json(results);
     }
     catch (error) {

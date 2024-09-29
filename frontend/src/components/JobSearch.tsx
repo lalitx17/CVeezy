@@ -28,7 +28,12 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const handleGenerateCV = async () => {
     try {
       console.log(userId)
-      const response = await axios.post('http://localhost:3000/generate-cv', { content: selectedJob.description, userId: userId });
+      const response = await axios.post('http://localhost:3000/generate-cv', {
+        content: selectedJob.description,
+        userId: userId,
+        company: selectedJob.company,
+        title: selectedJob.title
+      });
       console.log('CV generated:', response.data);
       updateCvCallback(response.data.choices[0].message.content);
       changePageCallback();

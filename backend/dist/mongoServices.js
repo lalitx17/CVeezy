@@ -149,12 +149,7 @@ function searchSimilarDocuments(queryText_1, userId_1) {
                 console.log(`Similarity Score: ${doc.score}`);
                 console.log('---');
             });
-<<<<<<< HEAD
             return results.map(doc => doc.content);
-=======
-            const contents = results.map(doc => doc.content);
-            console.log(contents);
->>>>>>> 2d7f33b (some changes)
         }
         catch (error) {
             console.error("Error in searchSimilarDocuments:", error);
@@ -165,7 +160,7 @@ function searchSimilarDocuments(queryText_1, userId_1) {
         }
     });
 }
-function generateCV(content, userId) {
+function generateCV(content, userId, company, title) {
     return __awaiter(this, void 0, void 0, function* () {
         const contents = yield searchSimilarDocuments(content, userId);
         if (contents.length > 0) {
@@ -173,9 +168,12 @@ function generateCV(content, userId) {
             const perplexityQ = `
 Make me cover letter with for the following job:
 ${content}
+The company name is ${company} and the job title is: ${title}
 given my skills outlined by:
 ${userContent}
-Give me only the cover letter, be concise
+Give me only the cover letter, be concise, do not include special characters like '*'
+Fill in every field possible
+Include the date: ${new Date().toString()}
 `;
             const result = yield (0, perplexityApi_1.perplexityQuery)(perplexityQ);
             return result;
