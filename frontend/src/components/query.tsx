@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from './useAuth';
 
-const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
+interface QueryProps {
+  updateCvCallback: (input: string) => void;
+  changePageCallback: () => void;
+}
+
+const Query: React.FC<QueryProps> = ({ updateCvCallback, changePageCallback }) => {
   const [inputText, setInputText] = useState('');
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
@@ -10,7 +15,7 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const { userId } = useAuth();
 
 
-  const handleGenerateCV = async (e: React.FromEvent) => {
+  const handleGenerateCV = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); // Start loading when request starts
     try {

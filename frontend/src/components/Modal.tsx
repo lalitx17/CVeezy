@@ -11,6 +11,7 @@ interface ModalProps {
     requirements: string;
   }; // Add more fields as necessary
   onGenerateCV: () => void;
+  loading: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, job, onGenerateCV, loading }) => {

@@ -13,10 +13,11 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
   const [jobQuery, setJobQuery] = useState<string>("");
   const [results, setResults] = useState<
     Array<{
-      title: string;
+      job_title: string;
       company: string;
       description: string;
       requirements: string;
+      min_annual_salary: number;
     }>
   >([]);
 
@@ -61,7 +62,6 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
       console.error('Error generating CV:', error);
     } finally {
       setLoading(false); // Stop loading after request completes
-      console.error("Error generating CV:", error);
     }
   };
 
