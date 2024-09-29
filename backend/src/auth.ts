@@ -10,7 +10,6 @@ import express, {
   import { v4 as uuidv4 } from 'uuid'; 
 
   
-  
   const authRouter: Router = express.Router();
   
   const registerHandler: RequestHandler = async (
@@ -21,7 +20,7 @@ import express, {
     const { username, password } = req.body;
     console.log(req.body);
 
-    
+
     if (!username || !password) {
       res.status(400).json({ message: "Username and password are required." });
       return;
@@ -45,7 +44,7 @@ import express, {
       const result = await client.db("users").collection("userInfo").insertOne({
         userId,
         username,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
       });
   
       res.status(201).json({ 

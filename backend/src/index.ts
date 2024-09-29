@@ -10,7 +10,6 @@ import vectorRouter from './vectorConnector';
 import authRouter from './auth';
 
 
-
 const app: Express = express();
 dotenv.config();
 app.use(cors());
@@ -21,12 +20,10 @@ const jobsApiKey : string = process.env.API_KEY || "";
 const perplexityApiKey : string = process.env.PERPLEXITY_API_KEY || "";
 
 
-
 app.use(vectorRouter);
 app.use(jobsRouter);
 app.use(pdfRouter);
 app.use('/auth', authRouter); 
-
 
 
 
