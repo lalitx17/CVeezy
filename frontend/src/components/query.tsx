@@ -7,7 +7,6 @@ const Query: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log(inputText);
       const response = await axios.post('http://localhost:3000/query', {
         content: inputText,
       });

@@ -34,9 +34,9 @@ const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void
         res.status(400).json({ error: 'Text query is required' });
         return;
     }
-    const limitNumber = 5;
+    const userId = "abacdns12";
     try {
-        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, limitNumber);
+        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
         res.json(results);
     }
     catch (error) {

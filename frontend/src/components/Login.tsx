@@ -1,184 +1,149 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from './useAuth';
 
-const Login = ({ setAuthenticated }) => {
-    const [isRegistering, setIsRegistering] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+const Login: React.FC = () => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-    const handleLoginSubmit = async (e) => {
-        e.preventDefault();
-        if (username && password) {
-            try {
-                const response = await fetch('http://localhost:3000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    setAuthenticated();
-                    console.log(data.message); // Success message
-                } else {
-                    setError(data.message || 'Login failed');
-                }
-            } catch (err) {
-                console.error('Error during login:', err);
-                setError('An error occurred during login');
-            }
-        }
-    };
+  const { login } = useAuth();
 
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-        if (username && password && password === confirmPassword) {
-            try {
-                const response = await fetch('http://localhost:3000/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    setAuthenticated();
-                    console.log(data.message); // Success message
-                } else {
-                    setError(data.message || 'Registration failed');
-                }
-            } catch (err) {
-                console.error('Error during registration:', err);
-                setError('An error occurred during registration');
-            }
+  interface AuthResponse {
+    message: string;
+    userId: string;
+    username: string;
+  }
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username && password) {
+      try {
+        const response = await fetch('http://localhost:3000/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        const data: AuthResponse = await response.json();
+        if (response.ok) {
+          login(data.userId, data.username);
+          console.log(data.message); // Success message
         } else {
-            console.error('Passwords do not match');
-            setError('Passwords do not match');
+          setError(data.message || 'Login failed');
         }
-    };
+      } catch (err) {
+        console.error('Error during login:', err);
+        setError('An error occurred during login');
+      }
+    }
+  };
 
-    return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
-                <h2 className="text-2xl font-bold text-center mb-6">
-                    {isRegistering ? 'Register' : 'Login'}
-                </h2>
-                {error && <p className="text-red-500 text-center">{error}</p>}
-                {isRegistering ? (
-                    <form onSubmit={handleRegisterSubmit}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="username">
-                                Username
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                placeholder="Enter your username"
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="password">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                placeholder="Enter your password"
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="confirm-password">
-                                Confirm Password
-                            </label>
-                            <input
-                                type="password"
-                                id="confirm-password"
-                                placeholder="Confirm your password"
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200"
-                        >
-                            Register
-                        </button>
-                        <p className="mt-4 text-sm text-center">
-                            Already have an account?{' '}
-                            <button
-                                type="button"
-                                className="text-blue-600 hover:underline"
-                                onClick={() => setIsRegistering(false)}
-                            >
-                                Login
-                            </button>
-                        </p>
-                    </form>
-                ) : (
-                    <form onSubmit={handleLoginSubmit}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="username">
-                                Username
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                placeholder="Enter your username"
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="password">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                placeholder="Enter your password"
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200"
-                        >
-                            Login
-                        </button>
-                        <p className="mt-4 text-sm text-center">
-                            Don't have an account?{' '}
-                            <button
-                                type="button"
-                                className="text-blue-600 hover:underline"
-                                onClick={() => setIsRegistering(true)}
-                            >
-                                Register
-                            </button>
-                        </p>
-                    </form>
-                )}
-            </div>
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username && password && password === confirmPassword) {
+      try {
+        const response = await fetch('http://localhost:3000/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        const data: AuthResponse = await response.json();
+        if (response.ok) {
+          login(data.userId, data.username);
+          console.log(data.message); // Success message
+        } else {
+          setError(data.message || 'Registration failed');
+        }
+      } catch (err) {
+        console.error('Error during registration:', err);
+        setError('An error occurred during registration');
+      }
+    } else {
+      setError('Passwords do not match');
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            {isRegistering ? 'Create your account' : 'Sign in to your account'}
+          </h2>
         </div>
-    );
+        <form className="mt-8 space-y-6" onSubmit={isRegistering ? handleRegisterSubmit : handleLoginSubmit}>
+          <input type="hidden" name="remember" value="true" />
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="username" className="sr-only">Username</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {isRegistering && (
+              <div>
+                <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+                <input
+                  id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+
+          {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {isRegistering ? 'Sign Up' : 'Sign In'}
+            </button>
+          </div>
+        </form>
+        <div className="text-sm text-center">
+          <button
+            onClick={() => setIsRegistering(!isRegistering)}
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

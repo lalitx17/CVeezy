@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
 import Login from './components/Login.tsx';
 import Dashboard from './components/Dashboard.tsx';
+import { useAuth } from './components/useAuth.tsx';
+
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    const setAuthenticated = () => {
-        setIsLoggedIn(true);
-    };
+ 
+    const { isAuthenticated } = useAuth();
 
     return (
         <div>
-            {isLoggedIn ? (
+            {isAuthenticated ? (
                 <Dashboard />
             ) : (
-                <Login setAuthenticated={setAuthenticated} />
+                <Login />
             )}
         </div>
     );

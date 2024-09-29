@@ -29,6 +29,8 @@ export async function monStatus() {
   }
 }
 
+
+
 export async function addDocumentWithEmbedding(content: string, userId: string, subject: string) {
   try {
     // Check if content is empty or undefined
@@ -72,7 +74,7 @@ export async function addDocumentWithEmbedding(content: string, userId: string, 
 }
 
 
-export async function searchSimilarDocuments(queryText: string, limit: number = 5) {
+export async function searchSimilarDocuments(queryText: string, userId: string, limit: number = 100) {
   try {
     await client.connect();
     const db = client.db("users");
@@ -89,12 +91,15 @@ export async function searchSimilarDocuments(queryText: string, limit: number = 
     const results = await collection.aggregate([
       {
         $vectorSearch: {
-          index: "vectorsearch",
+          index: "vectorSearch",
           path: "embeddings",
           queryVector: queryEmbedding,
-          numCandidates: 100,
+          numCandidates: 10000, 
           limit: limit
         }
+      },
+      {
+        $match: { userId: userId }
       },
       {
         $project: {
@@ -106,7 +111,7 @@ export async function searchSimilarDocuments(queryText: string, limit: number = 
       }
     ]).toArray();
 
-    console.log(`Found ${results.length} similar documents`);
+    console.log(`Found ${results.length} documents for user ${userId}`);
     
     // Format and log the results
     results.forEach((doc, index) => {

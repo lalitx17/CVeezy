@@ -18,7 +18,6 @@ const addDocumentHandler: RequestHandler = async (req: Request, res: Response, n
 
 
 
-
 const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     const { content } = req.body;
     console.log(req.body);
@@ -27,10 +26,10 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
         return;
     }
 
-    const limitNumber = 5;
+    const userId = "abacdns12";
 
     try {
-        const results = await searchSimilarDocuments(content, limitNumber);
+        const results = await searchSimilarDocuments(content, userId);
         res.json(results);
     } catch (error) {
         console.error('Error querying documents:', error);

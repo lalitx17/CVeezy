@@ -103,8 +103,8 @@ function addDocumentWithEmbedding(content, userId, subject) {
         }
     });
 }
-function searchSimilarDocuments(queryText_1) {
-    return __awaiter(this, arguments, void 0, function* (queryText, limit = 5) {
+function searchSimilarDocuments(queryText_1, userId_1) {
+    return __awaiter(this, arguments, void 0, function* (queryText, userId, limit = 100) {
         try {
             yield exports.client.connect();
             const db = exports.client.db("users");
@@ -118,12 +118,15 @@ function searchSimilarDocuments(queryText_1) {
             const results = yield collection.aggregate([
                 {
                     $vectorSearch: {
-                        index: "vectorsearch",
+                        index: "vectorSearch",
                         path: "embeddings",
                         queryVector: queryEmbedding,
-                        numCandidates: 100,
+                        numCandidates: 10000,
                         limit: limit
                     }
+                },
+                {
+                    $match: { userId: userId }
                 },
                 {
                     $project: {
@@ -134,7 +137,7 @@ function searchSimilarDocuments(queryText_1) {
                     }
                 }
             ]).toArray();
-            console.log(`Found ${results.length} similar documents`);
+            console.log(`Found ${results.length} documents for user ${userId}`);
             // Format and log the results
             results.forEach((doc, index) => {
                 console.log(`Document ${index + 1}:`);
