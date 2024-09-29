@@ -14,7 +14,6 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
     e.preventDefault();
     setLoading(true); // Start loading when request starts
     try {
-      console.log(userId);
       const response = await axios.post('http://localhost:3000/generate-cv', {
         content: inputText,
         userId: userId,
@@ -31,9 +30,8 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
     }
   };
 
-
   return (
-    <div className="flex flex-col items-center w-[900px]">
+    <div className="w-1/2 p-4 flex flex-col items-center">
       <h2 className="text-xl font-bold mb-4">Manual Job Entry</h2>
       <input
         type="text"
@@ -60,15 +58,15 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
           type="submit"
           className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
         >
-          Submit
+          Generate CV
         </button>
       </form>
-    {/* Spinner overlay */}
-    {loading && (
-      <div className="absolute inset-0 flex justify-center items-center bg-gray-100 bg-opacity-75 z-50">
-        <div className="loader border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-      </div>
-    )}
+      {/* Spinner overlay */}
+      {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-gray-100 bg-opacity-75 z-50">
+          <div className="loader border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 };

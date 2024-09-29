@@ -19,12 +19,10 @@ const Dashboard: React.FC = () => {
   const renderContent = () => {
     switch (currentPage) {
       case 'job-search':
-        return (
-          <div className="flex h-80vh">
-            <JobSearch updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
-            <Query updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
-          </div>
-        );
+        return ( <div className="flex h-screen">
+      <JobSearch updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
+      <Query updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
+    </div>        )
       case 'content-upload':
         return <ContentUpload />;
       default:
@@ -33,11 +31,8 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header Section */}
-      <header className="bg-gray-700 text-white p-6">
-        <h1 className="text-center text-3xl font-bold">CV Generator</h1>
-      </header>
+    <div>
+      <h1 className="bg-gray-600 text-white text-lg font-bold">CV generator</h1>
 
       {/* Navigation Section */}
       <nav className="bg-gray-800 p-4">
@@ -77,8 +72,7 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="p-6">{renderContent()}</main>
-    </div>
-  );
+  </div> )
 };
 
 export default Dashboard;
