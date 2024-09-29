@@ -103,7 +103,7 @@ const ContentUpload: React.FC = () => {
       </div>
 
       {/* Documents Column */}
-      <div className="flex flex-col w-full md:w-1/2 p-4 h-96 overflow-y-auto border border-gray-300 rounded-lg h-[80vh]">
+      <div className="flex flex-col w-full md:w-1/2 p-4 h-96 overflow-y-auto border border-gray-300 rounded-lg h-[70vh]">
         <h2 className="text-xl font-bold mb-4">Previously Submitted Documents</h2>
         {documents.length > 0 ? (
           <ul className="list-disc pl-5">

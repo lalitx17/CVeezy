@@ -9,20 +9,6 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3000/query', {
-        content: inputText,
-        userId: userId,
-      });
-      console.log('Response from server:', response.data);
-
-      setInputText('');
-    } catch (error) {
-      console.error('Error sending data to server:', error);
-    }
-  };
 
   const handleGenerateCV = async (e: React.FromEvent) => {
     e.preventDefault();
@@ -47,7 +33,7 @@ const Query: React.FC = ({ updateCvCallback, changePageCallback }) => {
 
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-[900px]">
       <h2 className="text-xl font-bold mb-4">Manual Job Entry</h2>
       <input
         type="text"

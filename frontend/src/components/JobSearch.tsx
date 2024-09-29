@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import { useState } from 'react';
-import axios from 'axios';
-import Modal from './Modal'; // Import the Modal component
-=======
 import { useState } from "react";
 import axios from "axios";
 import Modal from "./Modal"; // Import the Modal component
->>>>>>> b129845 (prompt added)
 import { useAuth } from "./useAuth.tsx";
 
 interface JobSearchProps {
@@ -53,38 +47,27 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
   const handleGenerateCV = async () => {
     setLoading(true); // Start loading when request starts
     try {
-      console.log(userId);
       const response = await axios.post('http://localhost:3000/generate-cv', {
         content: selectedJob.description,
         userId: userId,
         company: selectedJob.company,
-<<<<<<< HEAD
-        title: selectedJob.title,
-=======
-        title: selectedJob.title, 
         resultType: "COVER_LETTER",
->>>>>>> b129845 (prompt added)
+        title: selectedJob.job_title,
       });
       console.log('CV generated:', response.data);
       updateCvCallback(response.data.choices[0].message.content);
       changePageCallback();
     } catch (error) {
-<<<<<<< HEAD
       console.error('Error generating CV:', error);
     } finally {
       setLoading(false); // Stop loading after request completes
-=======
       console.error("Error generating CV:", error);
->>>>>>> b129845 (prompt added)
     }
   };
 
   return (
-    <div className="my-10">
-      <form
-        onSubmit={handleSearch}
-        className="flex flex-col items-center w-full max-w-2xl mx-auto"
-      >
+    <div className="w-1/2 p-4">
+      <form onSubmit={handleSearch} className="flex flex-col items-center w-full max-w-2xl mx-auto">
         <input
           type="text"
           value={jobQuery}
@@ -102,22 +85,24 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
       </form>
       {results.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-lg font-bold">Job Results:</h3>
-          <ul className="mt-2">
+          <ul className="mt-4 space-y-4">
             {results.map((job, index) => (
               <li
                 key={index}
-                className="border-b py-2 cursor-pointer"
+                className="border border-gray-300 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200"
                 onClick={() => handleJobClick(job)}
-              >
-                {job.title} - {job.company}
+              >Job
+                <h4 className="font-bold text-lg">{job.job_title}</h4>
+                <p className="text-gray-600">{job.company}</p>
+                <p className="text-gray-500 mt-2 text-sm line-clamp-3">
+                  {job.description.length > 300 ? `${job.description.substring(0, 300)}...` : job.description}
+                </p>
+                <p className="text-gray-500 mt-2 text-sm">Salary: ${job.min_annual_salary}</p>
               </li>
             ))}
           </ul>
         </div>
       )}
-      
-
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

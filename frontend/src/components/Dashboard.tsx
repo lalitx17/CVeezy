@@ -5,64 +5,78 @@ import MarkdownEditor from './MarkdownEditor.tsx';
 import Query from './query.tsx';
 
 const Dashboard: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'| "query">('dashboard');
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'| 'query'>('dashboard');
   const [cvContent, setCvContent] = useState<string>('');
 
-  const updateCvCallback = (input : string) => {
+  const updateCvCallback = (input: string) => {
     setCvContent(input);
-  }
+  };
 
   const changePageCallback = () => {
-    setCurrentPage('dashboard')
-  }
-
+    setCurrentPage('dashboard');
+  };
 
   const renderContent = () => {
     switch (currentPage) {
       case 'job-search':
-        return <JobSearch updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />;
+        return (
+          <div className="flex h-80vh">
+            <JobSearch updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
+            <Query updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />
+          </div>
+        );
       case 'content-upload':
         return <ContentUpload />;
-      case 'query':
-        return <Query updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />;
       default:
         return <MarkdownEditor initialText={cvContent} />;
     }
   };
 
-  
   return (
-    <div>
-      <h1 className="bg-gray-600 text-white text-lg font-bold">CV generator</h1>
-      <nav className="flex justify-around bg-gray-800 p-4 text-white">
-        <button
-          onClick={() => setCurrentPage('dashboard')}
-          className="hover:underline"
-        >
-          Generated CV
-        </button>
-        <button
-          onClick={() => setCurrentPage('job-search')}
-          className="hover:underline"
-        >
-          Job Search
-        </button>
-        <button
-          onClick={() => setCurrentPage('query')}
-          className="hover:underline"
-        >
-          Manual Job Entry
-        </button>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header Section */}
+      <header className="bg-gray-700 text-white p-6">
+        <h1 className="text-center text-3xl font-bold">CV Generator</h1>
+      </header>
 
-        <button
-          onClick={() => setCurrentPage('content-upload')}
-          className="hover:underline"
-        >
-          Content Upload
-        </button>
+      {/* Navigation Section */}
+      <nav className="bg-gray-800 p-4">
+        <ul className="flex justify-around">
+          <li>
+            <button
+              onClick={() => setCurrentPage('dashboard')}
+              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+                currentPage === 'dashboard' ? 'bg-gray-600' : ''
+              }`}
+            >
+              Generated CV
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setCurrentPage('job-search')}
+              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+                currentPage === 'job-search' ? 'bg-gray-600' : ''
+              }`}
+            >
+              Job Search
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setCurrentPage('content-upload')}
+              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+                currentPage === 'content-upload' ? 'bg-gray-600' : ''
+              }`}
+            >
+              Content Upload
+            </button>
+          </li>
+        </ul>
       </nav>
 
-      {renderContent()}
+      {/* Main Content Area */}
+      <main className="p-6">{renderContent()}</main>
     </div>
   );
 };
