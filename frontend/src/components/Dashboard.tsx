@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
   
   return (
     <div>
+      <h1 className="bg-gray-600 text-white text-lg font-bold">CV generator</h1>
       <nav className="flex justify-around bg-gray-800 p-4 text-white">
         <button
           onClick={() => setCurrentPage('dashboard')}

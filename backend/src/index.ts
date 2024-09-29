@@ -23,8 +23,6 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 app.use(vectorRouter);
-
-
   app.post('/register', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     if (!username || !password) {
