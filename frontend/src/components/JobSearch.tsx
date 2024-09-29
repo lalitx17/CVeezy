@@ -1,12 +1,33 @@
+<<<<<<< HEAD
 import { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
+=======
+import { useState } from "react";
+import axios from "axios";
+import Modal from "./Modal"; // Import the Modal component
+>>>>>>> b129845 (prompt added)
 import { useAuth } from "./useAuth.tsx";
 
-const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
+interface JobSearchProps {
+  updateCvCallback: (cvContent: string) => void;
+  changePageCallback: () => void;
+}
+
+const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallback }) => {
   const { userId } = useAuth();
-  const [jobQuery, setJobQuery] = useState<string>('');
-  const [results, setResults] = useState<Array<{ title: string; company: string; description: string; requirements: string }>>([]);
+  const [jobQuery, setJobQuery] = useState<string>("");
+  const [results, setResults] = useState<
+    Array<{
+      title: string;
+      company: string;
+      description: string;
+      requirements: string;
+    }>
+  >([]);
+
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false); // Add loading state
@@ -14,13 +35,16 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:3000/jobs?q=${jobQuery}`);
+      const response = await axios.post(
+        `http://localhost:3000/jobs?q=${jobQuery}`
+      );
       setResults(response.data); // Assuming the response contains job results
     } catch (error) {
-      console.error('Error fetching job results:', error);
+      console.error("Error fetching job results:", error);
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleJobClick = (job: any) => {
     setSelectedJob(job);
     setIsModalOpen(true);
@@ -34,21 +58,33 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
         content: selectedJob.description,
         userId: userId,
         company: selectedJob.company,
+<<<<<<< HEAD
         title: selectedJob.title,
+=======
+        title: selectedJob.title, 
+        resultType: "COVER_LETTER",
+>>>>>>> b129845 (prompt added)
       });
       console.log('CV generated:', response.data);
       updateCvCallback(response.data.choices[0].message.content);
       changePageCallback();
     } catch (error) {
+<<<<<<< HEAD
       console.error('Error generating CV:', error);
     } finally {
       setLoading(false); // Stop loading after request completes
+=======
+      console.error("Error generating CV:", error);
+>>>>>>> b129845 (prompt added)
     }
   };
 
   return (
-    <div className='my-10'>
-      <form onSubmit={handleSearch} className="flex flex-col items-center w-full max-w-2xl mx-auto">
+    <div className="my-10">
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-col items-center w-full max-w-2xl mx-auto"
+      >
         <input
           type="text"
           value={jobQuery}
@@ -69,7 +105,11 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
           <h3 className="text-lg font-bold">Job Results:</h3>
           <ul className="mt-2">
             {results.map((job, index) => (
-              <li key={index} className="border-b py-2 cursor-pointer" onClick={() => handleJobClick(job)}>
+              <li
+                key={index}
+                className="border-b py-2 cursor-pointer"
+                onClick={() => handleJobClick(job)}
+              >
                 {job.title} - {job.company}
               </li>
             ))}

@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import * as dotenv from "dotenv";
 import cors from 'cors';
-import { client } from './mongoServices';
 import jobsRouter from "./jobsApi"
 import pdfRouter from "./exportPdf"
 import vectorRouter from './vectorConnector';

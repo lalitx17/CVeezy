@@ -48,7 +48,7 @@ exports.client = new mongodb_1.MongoClient(uri, {
         version: mongodb_1.ServerApiVersion.v1,
         strict: false,
         deprecationErrors: true,
-    }
+    },
 });
 const openai = new openai_1.OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 function monStatus() {
@@ -67,7 +67,7 @@ function addDocumentWithEmbedding(content, userId, subject) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Check if content is empty or undefined
-            if (!content || content.trim() === '') {
+            if (!content || content.trim() === "") {
                 throw new Error("Content cannot be empty");
             }
             yield exports.client.connect();
@@ -91,7 +91,7 @@ function addDocumentWithEmbedding(content, userId, subject) {
                 content: content,
                 embeddings: embedding,
                 userId: userId,
-                subject: subject
+                subject: subject,
             });
             console.log(`Document inserted with _id: ${result.insertedId}`);
             return result.insertedId;
@@ -117,28 +117,30 @@ function searchSimilarDocuments(queryText_1, userId_1) {
             });
             const queryEmbedding = embeddingResponse.data[0].embedding;
             console.log("Query embedding generated successfully");
-            const results = yield collection.aggregate([
+            const results = yield collection
+                .aggregate([
                 {
                     $vectorSearch: {
                         index: "vectorSearch",
                         path: "embeddings",
                         queryVector: queryEmbedding,
                         numCandidates: 10000,
-                        limit: limit
-                    }
+                        limit: limit,
+                    },
                 },
                 {
-                    $match: { userId: userId }
+                    $match: { userId: userId },
                 },
                 {
                     $project: {
                         content: 1,
                         userId: 1,
                         subject: 1,
-                        score: { $meta: "vectorSearchScore" }
-                    }
-                }
-            ]).toArray();
+                        score: { $meta: "vectorSearchScore" },
+                    },
+                },
+            ])
+                .toArray();
             console.log(`Found ${results.length} documents for user ${userId}`);
             // Format and log the results
             results.forEach((doc, index) => {
@@ -147,9 +149,9 @@ function searchSimilarDocuments(queryText_1, userId_1) {
                 console.log(`User ID: ${doc.userId}`);
                 console.log(`Subject: ${doc.subject}`);
                 console.log(`Similarity Score: ${doc.score}`);
-                console.log('---');
+                console.log("---");
             });
-            return results.map(doc => doc.content);
+            return results.map((doc) => doc.content);
         }
         catch (error) {
             console.error("Error in searchSimilarDocuments:", error);
@@ -160,22 +162,11 @@ function searchSimilarDocuments(queryText_1, userId_1) {
         }
     });
 }
-function generateCV(content, userId, company, title) {
+function generateCV(content, userId, company, title, resultType) {
     return __awaiter(this, void 0, void 0, function* () {
         const contents = yield searchSimilarDocuments(content, userId);
         if (contents.length > 0) {
-            const userContent = contents[0];
-            const perplexityQ = `
-Make me cover letter with for the following job:
-${content}
-The company name is ${company} and the job title is: ${title}
-given my skills outlined by:
-${userContent}
-Give me only the cover letter, be concise, do not include special characters like '*'
-Fill in every field possible
-Include the date: ${new Date().toString()}
-`;
-            const result = yield (0, perplexityApi_1.perplexityQuery)(perplexityQ);
+            const result = yield (0, perplexityApi_1.perplexityQuery)(contents.join(" "), resultType, company, title);
             return result;
         }
     });

@@ -1,10 +1,9 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ServerApiVersion } from "mongodb";
 import * as dotenv from "dotenv";
-import { OpenAI } from 'openai';
-import { perplexityQuery } from "./perplexityApi"
+import { OpenAI } from "openai";
+import { perplexityQuery } from "./perplexityApi";
 
 dotenv.config();
-
 
 const uri = `mongodb+srv://lalitx17:${process.env.MONGODB_PASSWORD}@cluster0.c36pc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -13,28 +12,31 @@ export const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: false,
     deprecationErrors: true,
-  }
+  },
 });
 
-
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 
 export async function monStatus() {
   try {
     await client.connect();
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     await client.close();
   }
 }
 
-
-export async function addDocumentWithEmbedding(content: string, userId: string, subject: string) {
+export async function addDocumentWithEmbedding(
+  content: string,
+  userId: string,
+  subject: string
+) {
   try {
     // Check if content is empty or undefined
-    if (!content || content.trim() === '') {
+    if (!content || content.trim() === "") {
       throw new Error("Content cannot be empty");
     }
 
@@ -60,7 +62,7 @@ export async function addDocumentWithEmbedding(content: string, userId: string, 
       content: content,
       embeddings: embedding,
       userId: userId,
-      subject: subject
+      subject: subject,
     });
 
     console.log(`Document inserted with _id: ${result.insertedId}`);
@@ -73,8 +75,11 @@ export async function addDocumentWithEmbedding(content: string, userId: string, 
   }
 }
 
-
-export async function searchSimilarDocuments(queryText: string, userId: string, limit: number = 100) {
+export async function searchSimilarDocuments(
+  queryText: string,
+  userId: string,
+  limit: number = 100
+) {
   try {
     await client.connect();
     const db = client.db("users");
@@ -88,31 +93,33 @@ export async function searchSimilarDocuments(queryText: string, userId: string, 
 
     console.log("Query embedding generated successfully");
 
-    const results = await collection.aggregate([
-      {
-        $vectorSearch: {
-          index: "vectorSearch",
-          path: "embeddings",
-          queryVector: queryEmbedding,
-          numCandidates: 10000, 
-          limit: limit
-        }
-      },
-      {
-        $match: { userId: userId }
-      },
-      {
-        $project: {
-          content: 1,
-          userId: 1,
-          subject: 1,
-          score: { $meta: "vectorSearchScore" }
-        }
-      }
-    ]).toArray();
+    const results = await collection
+      .aggregate([
+        {
+          $vectorSearch: {
+            index: "vectorSearch",
+            path: "embeddings",
+            queryVector: queryEmbedding,
+            numCandidates: 10000,
+            limit: limit,
+          },
+        },
+        {
+          $match: { userId: userId },
+        },
+        {
+          $project: {
+            content: 1,
+            userId: 1,
+            subject: 1,
+            score: { $meta: "vectorSearchScore" },
+          },
+        },
+      ])
+      .toArray();
 
     console.log(`Found ${results.length} documents for user ${userId}`);
-    
+
     // Format and log the results
     results.forEach((doc, index) => {
       console.log(`Document ${index + 1}:`);
@@ -120,10 +127,10 @@ export async function searchSimilarDocuments(queryText: string, userId: string, 
       console.log(`User ID: ${doc.userId}`);
       console.log(`Subject: ${doc.subject}`);
       console.log(`Similarity Score: ${doc.score}`);
-      console.log('---');
+      console.log("---");
     });
 
-    return results.map(doc  => doc.content);
+    return results.map((doc) => doc.content);
   } catch (error) {
     console.error("Error in searchSimilarDocuments:", error);
     throw error;
@@ -132,21 +139,10 @@ export async function searchSimilarDocuments(queryText: string, userId: string, 
   }
 }
 
-export async function generateCV(content: string, userId: string, company: string, title: string){
+export async function generateCV(content: string, userId: string, company: string, title: string, resultType: string){
   const contents = await searchSimilarDocuments(content, userId);
   if(contents.length > 0){
-    const userContent : string = contents[0]
-    const perplexityQ = `
-Make me cover letter with for the following job:
-${content}
-The company name is ${company} and the job title is: ${title}
-given my skills outlined by:
-${userContent}
-Give me only the cover letter, be concise, do not include special characters like '*'
-Fill in every field possible
-Include the date: ${new Date().toString()}
-`
-  const result = await perplexityQuery(perplexityQ);
+  const result = await perplexityQuery(contents.join(" "), resultType, company, title);
   return result;
   }
 }

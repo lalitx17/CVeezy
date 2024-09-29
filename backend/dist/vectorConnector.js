@@ -28,14 +28,14 @@ const addDocumentHandler = (req, res, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { content, userId, company, title } = req.body;
+    const { content, userId, company, title, resultType } = req.body;
     console.log(req.body);
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
     }
     try {
-        const results = yield (0, mongoServices_1.generateCV)(content, userId, company, title);
+        const results = yield (0, mongoServices_1.generateCV)(content, userId, company, title, resultType);
         res.json(results);
     }
     catch (error) {
@@ -66,5 +66,5 @@ const getDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0
 });
 vectorRouter.post('/add-document', addDocumentHandler);
 vectorRouter.post('/generate-cv', queryDocumentsHandler);
-vectorRouter.post('/documents', getDocumentsHandler);
+vectorRouter.post('/documents', getDocumentsHandler); //get a list of documents
 exports.default = vectorRouter;

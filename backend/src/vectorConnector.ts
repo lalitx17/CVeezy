@@ -19,7 +19,7 @@ const addDocumentHandler: RequestHandler = async (req: Request, res: Response, n
 
 
 const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    const { content, userId, company, title } = req.body;
+    const { content, userId, company, title, resultType } = req.body;
     console.log(req.body);
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
@@ -27,7 +27,7 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
     }
 
     try {
-        const results = await generateCV(content, userId, company, title);
+        const results = await generateCV(content, userId, company, title, resultType);
         res.json(results)
     } catch (error) {
         console.error('Error querying documents:', error);
@@ -62,6 +62,7 @@ const getDocumentsHandler: RequestHandler = async (req: Request, res: Response, 
 
 vectorRouter.post('/add-document', addDocumentHandler);
 vectorRouter.post('/generate-cv', queryDocumentsHandler);
-vectorRouter.post('/documents', getDocumentsHandler)
+
+vectorRouter.post('/documents', getDocumentsHandler); //get a list of documents
 
 export default vectorRouter;
