@@ -1,5 +1,5 @@
 import express, { Request, Response, Router, RequestHandler, NextFunction } from 'express';
-import { addDocumentWithEmbedding, searchSimilarDocuments } from './mongoServices';
+import { addDocumentWithEmbedding, searchSimilarDocuments, client } from './mongoServices';
 
 const vectorRouter: Router = express.Router();
 
@@ -19,14 +19,11 @@ const addDocumentHandler: RequestHandler = async (req: Request, res: Response, n
 
 
 const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    const { content } = req.body;
+    const { content, userId } = req.body;
     console.log(req.body);
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
-    }
-
-    const userId = "abacdns12";
 
     try {
         const results = await searchSimilarDocuments(content, userId);
@@ -35,9 +32,36 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
         console.error('Error querying documents:', error);
         res.status(500).json({ error: 'An error occurred while querying documents' });
     }
+  }
 };
+
+const getDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+
+    const { userId } = req.body;
+    if(!userId){
+        res.status(500).json({ error: 'An error occurred while querying documents' });
+        return
+    }
+
+    try {
+        await client.connect();
+        const db = client.db("users");
+        const usersCollection = db.collection('userContents');
+
+        const results = await usersCollection.find({ userId: userId }).toArray();
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error querying documents:', error);
+        res.status(500).json({ error: 'An error occurred while querying documents' });
+    } finally {
+        await client.close();
+    }
+};
+
 
 vectorRouter.post('/add-document', addDocumentHandler);
 vectorRouter.post('/query', queryDocumentsHandler);
+vectorRouter.post('/documents', getDocumentsHandler)
 
 export default vectorRouter;

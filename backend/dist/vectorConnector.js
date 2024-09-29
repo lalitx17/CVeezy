@@ -28,22 +28,43 @@ const addDocumentHandler = (req, res, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { content } = req.body;
+    const { content, userId } = req.body;
     console.log(req.body);
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
+        try {
+            const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
+            res.json(results);
+        }
+        catch (error) {
+            console.error('Error querying documents:', error);
+            res.status(500).json({ error: 'An error occurred while querying documents' });
+        }
     }
-    const userId = "abacdns12";
+});
+const getDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.body;
+    if (!userId) {
+        res.status(500).json({ error: 'An error occurred while querying documents' });
+        return;
+    }
     try {
-        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
+        yield mongoServices_1.client.connect();
+        const db = mongoServices_1.client.db("users");
+        const usersCollection = db.collection('userContents');
+        const results = yield usersCollection.find({ userId: userId }).toArray();
         res.json(results);
     }
     catch (error) {
         console.error('Error querying documents:', error);
         res.status(500).json({ error: 'An error occurred while querying documents' });
     }
+    finally {
+        yield mongoServices_1.client.close();
+    }
 });
 vectorRouter.post('/add-document', addDocumentHandler);
 vectorRouter.post('/query', queryDocumentsHandler);
+vectorRouter.post('/documents', getDocumentsHandler);
 exports.default = vectorRouter;
