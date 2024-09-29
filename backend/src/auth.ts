@@ -44,6 +44,8 @@ import express, {
         username,
         passwordHash: hashedPassword,
       });
+
+      console.log("login request" ,username);
   
       res.status(201).json({ 
         message: "User registered successfully",

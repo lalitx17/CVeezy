@@ -24,10 +24,11 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         `http://localhost:3000/jobs`,
@@ -38,9 +39,12 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
       setResults(response.data.data); // Assuming the response contains job results
     } catch (error) {
       console.error("Error fetching job results:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleJobClick = (job: any) => {
     setSelectedJob(job);
@@ -57,54 +61,62 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
         resultType: "COVER_LETTER",
         title: selectedJob.job_title,
       });
-      console.log('CV generated:', response.data);
       updateCvCallback(response.data.choices[0].message.content);
       changePageCallback();
     } catch (error) {
       console.error('Error generating CV:', error);
     } finally {
-      setLoading(false); // Stop loading after request completes
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-1/2 p-4 bg-gray-800 text-white">
-      <form onSubmit={handleSearch} className="flex flex-col items-center w-full max-w-2xl mx-auto">
-        <input
-          type="text"
-          value={jobQuery}
-          onChange={(e) => setJobQuery(e.target.value)}
-          className="border border-gray-600 rounded px-3 py-2 mb-4 w-full bg-gray-700 text-white focus:ring focus:ring-blue-500"
-          placeholder="Search for jobs"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
-        >
-          Search
-        </button>
-      </form>
-      {results.length > 0 && (
-        <div className="mt-6">
-          <ul className="mt-4 space-y-4">
+    <div className="p-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8 text-center text-blue-400">Job Search</h2>
+        <form onSubmit={handleSearch} className="mb-12">
+          <div className="flex items-center bg-gray-700 rounded-lg overflow-hidden shadow-lg">
+            <input
+              type="text"
+              value={jobQuery}
+              onChange={(e) => setJobQuery(e.target.value)}
+              className="flex-grow px-6 py-4 bg-transparent text-white placeholder-gray-400 focus:outline-none"
+              placeholder="Search for jobs"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Search
+            </button>
+          </div>
+        </form>
+        {loading && (
+          <div className="flex justify-center items-center">
+            <div className="loader border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+          </div>
+        )}
+        {results.length > 0 && (
+          <ul className="space-y-6">
             {results.map((job, index) => (
               <li
                 key={index}
-                className="border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700"
+                className="bg-gray-800 rounded-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 onClick={() => handleJobClick(job)}
               >
-                <h4 className="font-bold text-lg">{job.job_title}</h4>
-                <p className="text-gray-300">{job.company}</p>
-                <p className="text-gray-400 mt-2 text-sm line-clamp-3">
-                  {job.description.length > 300 ? `${job.description.substring(0, 300)}...` : job.description}
-                </p>
-                <p className="text-gray-400 mt-2 text-sm">Salary: ${job.min_annual_salary}</p>
+                <h4 className="font-bold text-xl text-blue-400 mb-2">{job.job_title}</h4>
+                <p className="text-gray-300 mb-3">{job.company}</p>
+                <p className="text-gray-400 mb-4 line-clamp-3">{job.description}</p>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-green-400 font-semibold">Salary: ${job.min_annual_salary.toLocaleString()}</span>
+                  <span className="text-blue-400 hover:underline">View Details</span>
+                </div>
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -4,44 +4,43 @@ import ContentUpload from './ContentUpload.tsx';
 import MarkdownEditor from './MarkdownEditor.tsx';
 import Query from './query.tsx';
 
-const Dashboard: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload' | 'query'>('dashboard');
+const DashbosetCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload' | 'query'>('dashboard');
   const [cvContent, setCvContent] = useState<string>('');
-  const [animate, setAnimate] = useState(false);
+  const [isJobSearch, setIsJobSearch] = useState(true);
 
   const updateCvCallback = (input: string) => {
     setCvContent(input);
   };
 
-  const changePageCallback = (page: 'dashboard' | 'job-search' | 'content-upload' | 'query') => {
-    setAnimate(true); // Trigger animation
+  const changePageCallback = (page: 'dashboard' | 'job-search' | 'content-upload') => {
     setCurrentPage(page);
-    setTimeout(() => {
-      setAnimate(false); // Reset animation after it completes
-    }, 500); // Adjust this duration to match your animation duration
   };
 
-  const basicChangePageCallback = () => {
-    setCurrentPage('dashboard');
+  const toggleJobSearchView = () => {
+    setIsJobSearch(!isJobSearch);
   };
 
   const renderContent = () => {
-    const animationClass = animate ? 'animate-drop-fade' : '';
-
     switch (currentPage) {
       case 'job-search':
         return (
-          <div className={`flex h-[75vh] ${animationClass}`}>
-            <JobSearch updateCvCallback={updateCvCallback} changePageCallback={basicChangePageCallback} />
-            <Query updateCvCallback={updateCvCallback} changePageCallback={basicChangePageCallback} />
+          <div className="space-y-6 flex items-center flex-col">
+            <ToggleSwitch isJobSearch={isJobSearch} onToggle={toggleJobSearchView} />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
+              {isJobSearch ? (
+                <div>
+                <JobSearch updateCvCallback={updateCvCallback} changePageCallback={() => changePageCallback('dashboard')} />
+                </div>
+              ) : (
+                <div>
+                <Query updateCvCallback={updateCvCallback} changePageCallback={() => changePageCallback('dashboard')} />
+                </div>
+              )}
+            </div>
           </div>
         );
       case 'content-upload':
-        return (
-          <div className={animationClass}>
-            <ContentUpload />
-          </div>
-        );
+        return <ContentUpload />;
       default:
         return (
           <div className={animationClass}>

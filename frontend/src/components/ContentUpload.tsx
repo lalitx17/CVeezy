@@ -8,13 +8,12 @@ const ContentUpload: React.FC = () => {
   const [subject, setSubject] = useState('');
   const [inputText, setInputText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
 
   interface Document {
     subject: string;
     content: string;
   }
-
-  const [documents, setDocuments] = useState<Document[]>([]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -27,16 +26,19 @@ const ContentUpload: React.FC = () => {
         console.error('Error fetching documents:', error);
       }
     };
-
     fetchDocuments();
-  }, []);
+  }, [userId]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      pdfToText(file)
-        .then(text => setInputText(text))
-        .catch(error => setErrorMessage("Failed to extract text from pdf: " + error));
+      try {
+        const text = await pdfToText(file);
+        setInputText(text);
+        setErrorMessage(null);
+      } catch {
+        setErrorMessage("Failed to extract text from PDF");
+      }
     } else {
       setErrorMessage("No file selected");
     }
@@ -53,68 +55,70 @@ const ContentUpload: React.FC = () => {
       console.log('Response from server:', response.data);
       setSubject('');
       setInputText('');
+      // Refresh documents list
+      const response = await axios.post('/documents', { userId });
+      setDocuments(response.data);
     } catch (error) {
       console.error('Error sending data to server:', error);
     }
   };
 
+  const getPreviewText = (content: string): string => {
+    const words = content.split(' ');
+    return words.slice(0, 100).join(' ') + (words.length > 100 ? '...' : '');
+  };
+
   return (
-    <div className="flex flex-col md:flex-row items-start text-white">
-      {/* Submission Column */}
-      <div className="flex flex-col w-full md:w-1/2 p-4">
-        <h2 className="text-xl font-bold mb-4">Upload Your Content</h2>
-
-        {/* File input for PDF upload */}
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={handleFileChange}
-          className="mb-4 bg-gray-700 text-white border border-gray-600 rounded p-2"
-        />
-
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-
-        <form onSubmit={handleSubmit} className="w-full">
+    <div className="flex flex-col md:flex-row gap-8 p-8 bg-gray-900 text-white min-h-screen">
+      <div className="w-full md:w-1/2 space-y-6">
+        <h2 className="text-2xl font-bold text-blue-400">Upload Your Content</h2>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
           <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="border border-gray-600 rounded-lg px-3 py-2 w-full mb-4 bg-gray-700 text-white focus:ring focus:ring-blue-500"
-            placeholder="Enter subject..."
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            className="mb-4 text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
           />
-
-          {/* Textarea to display extracted PDF content */}
-          <textarea
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            className="border border-gray-600 rounded-lg px-3 py-2 w-full h-96 resize-none bg-gray-700 text-white focus:ring focus:ring-blue-500"
-            placeholder="Enter your content here or upload a PDF to extract text..."
-          />
-
-          <button
-            type="submit"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
-          >
-            Submit
-          </button>
-        </form>
+          {errorMessage && <p className="text-red-500 text-sm mb-4">{errorMessage}</p>}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter subject..."
+            />
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              className="w-full h-64 px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="Enter your content here or upload a PDF to extract text..."
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
       </div>
-
-      {/* Documents Column */}
-      <div className="flex flex-col w-full md:w-1/2 p-4 h-96 overflow-y-auto border border-gray-300 rounded-lg h-[70vh] bg-gray-700">
-        <h2 className="text-xl font-bold mb-4">Previously Submitted Documents</h2>
-        {documents.length > 0 ? (
-          <ul className="list-disc pl-5">
-            {documents.map((doc, index) => (
-              <li key={index} className="mb-2">
-                <h3 className="font-semibold">{doc.subject}</h3>
-                <p>{doc.content}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No documents submitted yet.</p>
-        )}
+      <div className="w-full md:w-1/2 space-y-6">
+        <h2 className="text-2xl font-bold text-blue-400">Previously Submitted Documents</h2>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg h-[calc(100vh-12rem)] overflow-y-auto">
+          {documents.length > 0 ? (
+            <ul className="space-y-4">
+              {documents.map((doc, index) => (
+                <li key={index} className="bg-gray-700 p-4 rounded-md">
+                  <h3 className="font-semibold text-lg text-blue-300 mb-2">{doc.subject}</h3>
+                  <p className="text-gray-300 text-sm">{getPreviewText(doc.content)}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-400">No documents submitted yet.</p>
+          )}
+        </div>
       </div>
     </div>
   );

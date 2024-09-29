@@ -3,8 +3,19 @@ dotenv.config();
 
 const PERPLEXITY_API_KEY: string = process.env.PERPLEXITY_API_KEY || "";
 
+<<<<<<< HEAD
 export const perplexityQuery = async (context: string, resultType: string, company: string, title: string) => {
 
+=======
+export const perplexityQuery = async (
+  question: string,
+  context: string,
+  resultType: string,
+  company: string,
+  title: string
+) => {
+  console.log(resultType);
+>>>>>>> a7e88ad (ui changed)
 
   const COVER_LETTER_PROMPT = `
     As an experienced cover letter writer, create a compelling cover letter based on the following information:
@@ -34,8 +45,6 @@ export const perplexityQuery = async (context: string, resultType: string, compa
     Ensure the essay is well-organized, uses appropriate transitions, and maintains a consistent academic tone throughout.
   `;
 
-
-
   try {
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
@@ -52,9 +61,9 @@ export const perplexityQuery = async (context: string, resultType: string, compa
           },
           {
             role: "user",
-            content: (resultType == "COVER_LETTER") ? COVER_LETTER_PROMPT : ESSAY_PROMPT,
+            content:
+              resultType == "COVER_LETTER" ? COVER_LETTER_PROMPT : ESSAY_PROMPT,
           },
-
         ],
         temperature: 0.2,
         top_p: 0.9,
