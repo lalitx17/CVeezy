@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
       case 'content-upload':
         return <ContentUpload />;
       case 'query':
-        return <Query/>;
+        return <Query updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />;
       default:
         return <MarkdownEditor initialText={cvContent} />;
     }
@@ -39,7 +39,7 @@ const Dashboard: React.FC = () => {
           onClick={() => setCurrentPage('dashboard')}
           className="hover:underline"
         >
-          Dashboard
+          Generated CV
         </button>
         <button
           onClick={() => setCurrentPage('job-search')}
@@ -48,16 +48,17 @@ const Dashboard: React.FC = () => {
           Job Search
         </button>
         <button
+          onClick={() => setCurrentPage('query')}
+          className="hover:underline"
+        >
+          Manual Job Entry
+        </button>
+
+        <button
           onClick={() => setCurrentPage('content-upload')}
           className="hover:underline"
         >
           Content Upload
-        </button>
-        <button
-          onClick={() => setCurrentPage('query')}
-          className="hover:underline"
-        >
-          query
         </button>
       </nav>
 

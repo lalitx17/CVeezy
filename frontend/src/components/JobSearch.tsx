@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
-import { useAuth } from "./useAuth.tsx"
+import { useAuth } from "./useAuth.tsx";
 
 const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const { userId } = useAuth();
@@ -9,6 +9,7 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
   const [results, setResults] = useState<Array<{ title: string; company: string; description: string; requirements: string }>>([]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // Add loading state
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,19 +27,22 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
   };
 
   const handleGenerateCV = async () => {
+    setLoading(true); // Start loading when request starts
     try {
-      console.log(userId)
+      console.log(userId);
       const response = await axios.post('http://localhost:3000/generate-cv', {
         content: selectedJob.description,
         userId: userId,
         company: selectedJob.company,
-        title: selectedJob.title
+        title: selectedJob.title,
       });
       console.log('CV generated:', response.data);
       updateCvCallback(response.data.choices[0].message.content);
       changePageCallback();
     } catch (error) {
       console.error('Error generating CV:', error);
+    } finally {
+      setLoading(false); // Stop loading after request completes
     }
   };
 
@@ -72,11 +76,14 @@ const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
           </ul>
         </div>
       )}
+      
+
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         job={selectedJob}
         onGenerateCV={handleGenerateCV}
+        loading={loading}
       />
     </div>
   );

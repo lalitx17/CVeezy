@@ -13,7 +13,7 @@ interface ModalProps {
   onGenerateCV: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, job, onGenerateCV }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, job, onGenerateCV, loading }) => {
   if (!isOpen) return null;
 
   return (
@@ -38,6 +38,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, job, onGenerateCV }) => 
           </button>
         </div>
       </div>
+
+      {/* Spinner overlay */}
+      {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-gray-100 bg-opacity-75 z-50">
+          <div className="loader border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 };
