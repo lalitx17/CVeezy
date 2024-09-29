@@ -39,7 +39,7 @@ const fetchJobs = async (apiKey: string) => {
           }
         ],
         page: 0,
-        limit: 25,
+        limit: 10,
         company_description_pattern_or: [],
         company_description_pattern_not: [],
         company_description_pattern_accent_insensitive: false,
