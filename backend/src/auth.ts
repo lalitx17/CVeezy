@@ -18,8 +18,6 @@ import express, {
     next: NextFunction
   ) => {
     const { username, password } = req.body;
-    console.log(req.body);
-
 
     if (!username || !password) {
       res.status(400).json({ message: "Username and password are required." });
@@ -69,6 +67,7 @@ import express, {
     next: NextFunction
   ) => {
     const { username, password } = req.body;
+
     if (!username || !password) {
       res.status(400).json({ message: "Username and password are required." });
       return;
@@ -86,7 +85,7 @@ import express, {
         return;
       }
   
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
       if (!isPasswordValid) {
         res.status(400).json({ message: "Invalid username or password" });
         return;
