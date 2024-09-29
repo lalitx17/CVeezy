@@ -6,6 +6,8 @@ import jobsRouter from "./jobsApi"
 import pdfRouter from "./exportPdf"
 import vectorRouter from './vectorConnector';
 import authRouter from './auth';
+import path from 'path';
+
 
 
 const app: Express = express();
@@ -17,16 +19,13 @@ const port = process.env.PORT || 3000;
 const jobsApiKey : string = process.env.API_KEY || "";
 
 
+app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
 app.use(vectorRouter);
 app.use(jobsRouter);
 app.use(pdfRouter);
 app.use('/auth', authRouter); 
 
 
-
-app.get('/', async (req: Request, res: Response) => {
-  res.json({message: "everything works fine"})
-});
 
 
 app.listen(port, () => {
