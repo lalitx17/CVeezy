@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const MarkdownEditor: React.FC = () => {
-  const [inputText, setInputText] = useState('');
+const MarkdownEditor: React.FC = ({ initialText }) => {
+  const [inputText, setInputText] = useState(initialText);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);

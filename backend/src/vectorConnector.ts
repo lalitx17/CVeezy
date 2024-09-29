@@ -1,5 +1,5 @@
 import express, { Request, Response, Router, RequestHandler, NextFunction } from 'express';
-import { addDocumentWithEmbedding, searchSimilarDocuments, client } from './mongoServices';
+import { addDocumentWithEmbedding, generateCV, client } from './mongoServices';
 
 const vectorRouter: Router = express.Router();
 
@@ -27,14 +27,13 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
     }
 
     try {
-        const results = await searchSimilarDocuments(content, userId);
-        res.json(results);
+        const results = await generateCV(content, userId);
+        res.json(results)
     } catch (error) {
         console.error('Error querying documents:', error);
         res.status(500).json({ error: 'An error occurred while querying documents' });
     }
   }
-};
 
 const getDocumentsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -62,7 +61,7 @@ const getDocumentsHandler: RequestHandler = async (req: Request, res: Response, 
 
 
 vectorRouter.post('/add-document', addDocumentHandler);
-vectorRouter.post('/query', queryDocumentsHandler);
+vectorRouter.post('/generate-cv', queryDocumentsHandler);
 vectorRouter.post('/documents', getDocumentsHandler)
 
 export default vectorRouter;

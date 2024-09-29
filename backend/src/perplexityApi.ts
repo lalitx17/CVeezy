@@ -1,10 +1,15 @@
-export const perplexityQuery = async (apiKey: string, perplexityQuery : string) => {
+import * as dotenv from "dotenv";
+dotenv.config()
+
+const perplexityApiKey : string = process.env.PERPLEXITY_API_KEY || "";
+
+export const perplexityQuery = async (perplexityQuery : string) => {
   try {
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
+        Authorization: `Bearer ${perplexityApiKey}`
       },
       body: JSON.stringify({
         model: "llama-3.1-sonar-large-128k-online",

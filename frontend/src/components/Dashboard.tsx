@@ -6,18 +6,27 @@ import Query from './query.tsx';
 
 const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'| "query">('dashboard');
+  const [cvContent, setCvContent] = useState<string>('');
+
+  const updateCvCallback = (input : string) => {
+    setCvContent(input);
+  }
+
+  const changePageCallback = () => {
+    setCurrentPage('dashboard')
+  }
 
 
   const renderContent = () => {
     switch (currentPage) {
       case 'job-search':
-        return <JobSearch />;
+        return <JobSearch updateCvCallback={updateCvCallback} changePageCallback={changePageCallback} />;
       case 'content-upload':
         return <ContentUpload />;
       case 'query':
         return <Query/>;
       default:
-        return <MarkdownEditor />;
+        return <MarkdownEditor initialText={cvContent} />;
     }
   };
 

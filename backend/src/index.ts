@@ -2,8 +2,6 @@ import express, { Express, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import * as dotenv from "dotenv";
 import cors from 'cors';
-import { client } from './mongoServices';
-import { perplexityQuery } from "./perplexityApi"
 import jobsRouter from "./jobsApi"
 import pdfRouter from "./exportPdf"
 import vectorRouter from './vectorConnector';
@@ -17,7 +15,6 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 const jobsApiKey : string = process.env.API_KEY || "";
-const perplexityApiKey : string = process.env.PERPLEXITY_API_KEY || "";
 
 
 app.use(vectorRouter);

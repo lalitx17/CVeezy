@@ -36,9 +36,11 @@ exports.client = void 0;
 exports.monStatus = monStatus;
 exports.addDocumentWithEmbedding = addDocumentWithEmbedding;
 exports.searchSimilarDocuments = searchSimilarDocuments;
+exports.generateCV = generateCV;
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 const openai_1 = require("openai");
+const perplexityApi_1 = require("./perplexityApi");
 dotenv.config();
 const uri = `mongodb+srv://lalitx17:${process.env.MONGODB_PASSWORD}@cluster0.c36pc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 exports.client = new mongodb_1.MongoClient(uri, {
@@ -147,7 +149,7 @@ function searchSimilarDocuments(queryText_1, userId_1) {
                 console.log(`Similarity Score: ${doc.score}`);
                 console.log('---');
             });
-            return results;
+            return results.map(doc => doc.content);
         }
         catch (error) {
             console.error("Error in searchSimilarDocuments:", error);
@@ -155,6 +157,23 @@ function searchSimilarDocuments(queryText_1, userId_1) {
         }
         finally {
             yield exports.client.close();
+        }
+    });
+}
+function generateCV(content, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const contents = yield searchSimilarDocuments(content, userId);
+        if (contents.length > 0) {
+            const userContent = contents[0];
+            const perplexityQ = `
+Make me cover letter with for the following job:
+${content}
+given my skills outlined by:
+${userContent}
+Give me only the cover letter, be concise
+`;
+            const result = yield (0, perplexityApi_1.perplexityQuery)(perplexityQ);
+            return result;
         }
     });
 }

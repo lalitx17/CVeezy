@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
+import { useAuth } from "./useAuth.tsx"
 
-const JobSearch: React.FC = () => {
+const JobSearch: React.FC = ({ updateCvCallback, changePageCallback }) => {
+  const { userId } = useAuth();
   const [jobQuery, setJobQuery] = useState<string>('');
   const [results, setResults] = useState<Array<{ title: string; company: string; description: string; requirements: string }>>([]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -25,9 +27,11 @@ const JobSearch: React.FC = () => {
 
   const handleGenerateCV = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/generate-cv', { job: selectedJob });
+      console.log(userId)
+      const response = await axios.post('http://localhost:3000/generate-cv', { content: selectedJob.description, userId: userId });
       console.log('CV generated:', response.data);
-      // Optionally, handle success (e.g., show a notification)
+      updateCvCallback(response.data.choices[0].message.content);
+      changePageCallback();
     } catch (error) {
       console.error('Error generating CV:', error);
     }

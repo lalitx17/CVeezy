@@ -33,14 +33,14 @@ const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
-        try {
-            const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
-            res.json(results);
-        }
-        catch (error) {
-            console.error('Error querying documents:', error);
-            res.status(500).json({ error: 'An error occurred while querying documents' });
-        }
+    }
+    try {
+        const results = yield (0, mongoServices_1.generateCV)(content, userId);
+        res.json(results);
+    }
+    catch (error) {
+        console.error('Error querying documents:', error);
+        res.status(500).json({ error: 'An error occurred while querying documents' });
     }
 });
 const getDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -65,6 +65,6 @@ const getDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0
     }
 });
 vectorRouter.post('/add-document', addDocumentHandler);
-vectorRouter.post('/query', queryDocumentsHandler);
+vectorRouter.post('/generate-cv', queryDocumentsHandler);
 vectorRouter.post('/documents', getDocumentsHandler);
 exports.default = vectorRouter;

@@ -1,8 +1,10 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import * as dotenv from "dotenv";
 import { OpenAI } from 'openai';
+import { perplexityQuery } from "./perplexityApi"
 
 dotenv.config();
+
 
 const uri = `mongodb+srv://lalitx17:${process.env.MONGODB_PASSWORD}@cluster0.c36pc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -122,11 +124,27 @@ export async function searchSimilarDocuments(queryText: string, userId: string, 
       console.log('---');
     });
 
-    return results;
+    return results.map(doc  => doc.content);
   } catch (error) {
     console.error("Error in searchSimilarDocuments:", error);
     throw error;
   } finally {
     await client.close();
+  }
+}
+
+export async function generateCV(content: string, userId: string){
+  const contents = await searchSimilarDocuments(content, userId);
+  if(contents.length > 0){
+    const userContent : string = contents[0]
+    const perplexityQ = `
+Make me cover letter with for the following job:
+${content}
+given my skills outlined by:
+${userContent}
+Give me only the cover letter, be concise
+`
+  const result = await perplexityQuery(perplexityQ);
+  return result;
   }
 }
