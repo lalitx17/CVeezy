@@ -13,11 +13,14 @@ const MarkdownEditor: React.FC = () => {
     try {
       const response = await axios.post('http://localhost:3000/export-pdf', {
         inputText,
-      });
+      }, {responseType: "blob"});
 
       if (response.status === 200) {
         console.log(response.data.message);
-        alert("PDF export initiated successfully!");
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        window.open(blobUrl);
       }
     } catch (error) {
       console.error('Error exporting PDF:', error);

@@ -107,8 +107,8 @@ app.post('/export-pdf', async (req: Request, res: Response) => {
     return
   }
   console.log(inputText)
-  generatePDF(inputText, filename);
-  res.status(200).json({message: "Success"})
+  const pdfBytes = await generatePDF(inputText, filename);
+  res.send(Buffer.from(pdfBytes));
 })
 
 
