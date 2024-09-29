@@ -18,7 +18,6 @@ export const client = new MongoClient(uri, {
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 
-
 export async function monStatus() {
   try {
     await client.connect();

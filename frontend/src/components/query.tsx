@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from './useAuth';
 
 const Query: React.FC = () => {
   const [inputText, setInputText] = useState('');
+  const {userId} = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/query', {
         content: inputText,
+        userId: userId,
       });
       console.log('Response from server:', response.data);
 

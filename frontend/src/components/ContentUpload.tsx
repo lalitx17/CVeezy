@@ -27,10 +27,15 @@ const ContentUpload: React.FC = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    pdfToText(file)
-      .then(text => setInputText(text))
-      .catch(error => setErrorMessage("Failed to extract text from pdf: " + error));
+    if (file) {
+      pdfToText(file)
+        .then(text => setInputText(text))
+        .catch(error => setErrorMessage("Failed to extract text from pdf" + error));
+    } else {
+      setErrorMessage("No file selected");
+    }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,5 +114,7 @@ const ContentUpload: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default ContentUpload;

@@ -24,6 +24,7 @@ const queryDocumentsHandler: RequestHandler = async (req: Request, res: Response
     if (!content || typeof content !== 'string') {
         res.status(400).json({ error: 'Text query is required' });
         return;
+    }
 
     try {
         const results = await searchSimilarDocuments(content, userId);
