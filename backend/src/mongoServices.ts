@@ -31,7 +31,6 @@ export async function monStatus() {
 }
 
 
-
 export async function addDocumentWithEmbedding(content: string, userId: string, subject: string) {
   try {
     // Check if content is empty or undefined

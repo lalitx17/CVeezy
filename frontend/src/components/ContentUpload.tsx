@@ -8,7 +8,14 @@ const ContentUpload: React.FC = () => {
   const [subject, setSubject] = useState('');
   const [inputText, setInputText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [documents, setDocuments] = useState([]);
+
+  
+  interface Document {
+    subject: string;
+    content: string;
+  }
+  
+  const [documents, setDocuments] = useState<Document[]>([]);
 
   useEffect(() => {
     const fetchDocuments = async () => {

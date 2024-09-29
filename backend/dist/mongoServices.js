@@ -149,7 +149,12 @@ function searchSimilarDocuments(queryText_1, userId_1) {
                 console.log(`Similarity Score: ${doc.score}`);
                 console.log('---');
             });
+<<<<<<< HEAD
             return results.map(doc => doc.content);
+=======
+            const contents = results.map(doc => doc.content);
+            console.log(contents);
+>>>>>>> 2d7f33b (some changes)
         }
         catch (error) {
             console.error("Error in searchSimilarDocuments:", error);

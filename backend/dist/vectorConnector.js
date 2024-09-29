@@ -35,7 +35,11 @@ const queryDocumentsHandler = (req, res, next) => __awaiter(void 0, void 0, void
         return;
     }
     try {
+<<<<<<< HEAD
         const results = yield (0, mongoServices_1.generateCV)(content, userId);
+=======
+        const results = yield (0, mongoServices_1.searchSimilarDocuments)(content, userId);
+>>>>>>> 2d7f33b (some changes)
         res.json(results);
     }
     catch (error) {
