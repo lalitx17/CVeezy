@@ -28,14 +28,15 @@ export default {
         white: ["'Josefin Sans'", 'sans-serif'],
         secondary: ["'Poppins'", 'sans-serif'],
         montser: ["'Montserrat'", 'sans-serif'],
+        ubuntuMono: ["'Ubuntu Mono'", 'monospace'], // Add Ubuntu Mono here
       },
       animation: {
-        'drop-fade': 'dropFade 0.75s ease-in forwards',
+        'drop-fade': 'dropFade 0.50s ease-in forwards',
       },
       keyframes: {
         dropFade: {
           '0%': {
-            transform: 'translateY(-20px)',
+            transform: 'translateY(-30px)',
             opacity: '0',
           },
           '100%': {

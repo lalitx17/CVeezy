@@ -21,7 +21,6 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
     }>
   >([]);
 
-  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -66,19 +65,19 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
   };
 
   return (
-    <div className="w-1/2 p-4">
+    <div className="w-1/2 p-4 bg-gray-800 text-white">
       <form onSubmit={handleSearch} className="flex flex-col items-center w-full max-w-2xl mx-auto">
         <input
           type="text"
           value={jobQuery}
           onChange={(e) => setJobQuery(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 mb-4 w-full"
+          className="border border-gray-600 rounded px-3 py-2 mb-4 w-full bg-gray-700 text-white focus:ring focus:ring-blue-500"
           placeholder="Search for jobs"
           required
         />
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg"
         >
           Search
         </button>
@@ -89,15 +88,15 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
             {results.map((job, index) => (
               <li
                 key={index}
-                className="border border-gray-300 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                className="border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700"
                 onClick={() => handleJobClick(job)}
-              >Job
+              >
                 <h4 className="font-bold text-lg">{job.job_title}</h4>
-                <p className="text-gray-600">{job.company}</p>
-                <p className="text-gray-500 mt-2 text-sm line-clamp-3">
+                <p className="text-gray-300">{job.company}</p>
+                <p className="text-gray-400 mt-2 text-sm line-clamp-3">
                   {job.description.length > 300 ? `${job.description.substring(0, 300)}...` : job.description}
                 </p>
-                <p className="text-gray-500 mt-2 text-sm">Salary: ${job.min_annual_salary}</p>
+                <p className="text-gray-400 mt-2 text-sm">Salary: ${job.min_annual_salary}</p>
               </li>
             ))}
           </ul>

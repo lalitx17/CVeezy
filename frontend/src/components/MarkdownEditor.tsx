@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+
 interface MarkdownEditorProps {
   initialText: string;
 }
-const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ initialText  }) => {
+
+const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ initialText }) => {
   const [inputText, setInputText] = useState(initialText);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,18 +33,18 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ initialText  }) => {
   };
 
   return (
-    <div className="flex flex-col w-full h-[70vh] bg-gray-50">
+    <div className="flex flex-col w-full h-[70vh] text-white">
       <h2 className="text-2xl font-bold text-center my-4">Generated Cover Letter</h2>
       <textarea
         value={inputText}
         onChange={handleInputChange}
-        className="flex-grow border border-gray-300 rounded-lg px-4 py-3 w-full resize-none focus:ring focus:ring-blue-500 text-gray-700"
-        placeholder="Cover Letter text will be displayed here.."
+        className="flex-grow border border-gray-600 rounded-lg px-4 py-3 w-full resize-none focus:ring focus:ring-blue-500 bg-gray-700 text-white"
+        placeholder="Cover Letter text will be displayed here..."
       />
       <div className="p-4">
         <button
           onClick={handleExportPDF}
-          className="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg text-lg transition-colors duration-200"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg text-lg transition-colors duration-200"
         >
           Export to PDF
         </button>

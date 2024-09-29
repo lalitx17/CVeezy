@@ -18,12 +18,12 @@ const Dashboard: React.FC = () => {
     setCurrentPage(page);
     setTimeout(() => {
       setAnimate(false); // Reset animation after it completes
-    }, 750); // Adjust this duration to match your animation duration
+    }, 500); // Adjust this duration to match your animation duration
   };
 
   const basicChangePageCallback = () => {
-    setCurrentPage('dashboard')
-  }
+    setCurrentPage('dashboard');
+  };
 
   const renderContent = () => {
     const animationClass = animate ? 'animate-drop-fade' : '';
@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
     switch (currentPage) {
       case 'job-search':
         return (
-          <div className={`flex h-screen ${animationClass}`}>
+          <div className={`flex h-[75vh] ${animationClass}`}>
             <JobSearch updateCvCallback={updateCvCallback} changePageCallback={basicChangePageCallback} />
             <Query updateCvCallback={updateCvCallback} changePageCallback={basicChangePageCallback} />
           </div>
@@ -52,18 +52,18 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 animate-drop-fade">
-      <header className="bg-gray-700 text-white p-6">
-        <h1 className="text-center text-3xl font-bold">CV Generator</h1>
+    <div className="min-h-screen bg-gray-900 animate-drop-fade">
+      <header className="text-white p-6">
+        <h1 className="text-center text-3xl font-bold">CV easy</h1>
       </header>
 
       {/* Navigation Section */}
-      <nav className="bg-gray-800 p-4">
+      <nav className="p-4 border border-gray-600">
         <ul className="flex justify-around">
           <li>
             <button
               onClick={() => changePageCallback('dashboard')}
-              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
                 currentPage === 'dashboard' ? 'bg-gray-600' : ''
               }`}
             >
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
           <li>
             <button
               onClick={() => changePageCallback('job-search')}
-              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
                 currentPage === 'job-search' ? 'bg-gray-600' : ''
               }`}
             >
@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
           <li>
             <button
               onClick={() => changePageCallback('content-upload')}
-              className={`text-white py-2 px-4 hover:bg-gray-600 rounded ${
+              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
                 currentPage === 'content-upload' ? 'bg-gray-600' : ''
               }`}
             >

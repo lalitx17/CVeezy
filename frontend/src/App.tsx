@@ -1,10 +1,10 @@
 import Login from './components/Login.tsx';
 import Dashboard from './components/Dashboard.tsx';
 import { useAuth } from './components/useAuth.tsx';
-import './App.css'
 
 
 const App = () => {
+    document.title = "CV easy"
  
     const { isAuthenticated } = useAuth();
 
