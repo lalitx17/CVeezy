@@ -14,15 +14,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ initialText }) => {
 
   const handleExportPDF = async () => {
     try {
-<<<<<<< HEAD
       const response = await axios.post(
-        'http://localhost:3000/export-pdf',
+        '/export-pdf',
         { inputText },
         { responseType: 'blob' }
       );
-=======
-      const response = await axios.post('/export-pdf', { inputText }, { responseType: 'blob' });
->>>>>>> a7e88ad (ui changed)
 
       if (response.status === 200) {
         const blob = new Blob([response.data], { type: 'application/pdf' });

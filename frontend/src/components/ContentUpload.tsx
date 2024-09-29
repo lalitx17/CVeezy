@@ -2,25 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import pdfToText from 'react-pdftotext';
 import { useAuth } from './useAuth.tsx';
-
+ 
 const ContentUpload: React.FC = () => {
   const { userId } = useAuth();
   const [subject, setSubject] = useState('');
   const [inputText, setInputText] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
-
+ 
   interface Document {
     subject: string;
     content: string;
   }
-
+ 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/documents', {
-          userId: userId,
-        });
+        const response = await axios.post('/documents', { userId: userId });
         setDocuments(response.data);
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -28,7 +26,7 @@ const ContentUpload: React.FC = () => {
     };
     fetchDocuments();
   }, [userId]);
-
+ 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -43,16 +41,11 @@ const ContentUpload: React.FC = () => {
       setErrorMessage("No file selected");
     }
   };
-
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/add-document', {
-        subject: subject,
-        content: inputText,
-        userId: userId,
-      });
-      console.log('Response from server:', response.data);
+      await axios.post('/add-document', { subject, content: inputText, userId });
       setSubject('');
       setInputText('');
       // Refresh documents list
@@ -62,12 +55,12 @@ const ContentUpload: React.FC = () => {
       console.error('Error sending data to server:', error);
     }
   };
-
+ 
   const getPreviewText = (content: string): string => {
     const words = content.split(' ');
     return words.slice(0, 100).join(' ') + (words.length > 100 ? '...' : '');
   };
-
+ 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8 bg-gray-900 text-white min-h-screen">
       <div className="w-full md:w-1/2 space-y-6">
@@ -123,5 +116,5 @@ const ContentUpload: React.FC = () => {
     </div>
   );
 };
-
+ 
 export default ContentUpload;

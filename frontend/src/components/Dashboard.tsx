@@ -1,10 +1,31 @@
-import { useState } from 'react';
-import JobSearch from './JobSearch.tsx';
-import ContentUpload from './ContentUpload.tsx';
-import MarkdownEditor from './MarkdownEditor.tsx';
-import Query from './query.tsx';
+import React, { useState } from 'react';
+import JobSearch from './JobSearch';
+import ContentUpload from './ContentUpload';
+import MarkdownEditor from './MarkdownEditor';
+import Navbar from './Navbar';
+import Query from './query';
 
-const DashbosetCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload' | 'query'>('dashboard');
+const ToggleSwitch = ({ isJobSearch, onToggle }: { isJobSearch: boolean, onToggle: () => void }) => {
+  return (
+    <div className="flex items-center justify-center mb-6">
+      <span className={`mr-3 text-lg ${isJobSearch ? 'font-bold text-white' : 'text-gray-500'}`}>Job Search</span>
+      <div
+        className="w-14 h-7 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer"
+        onClick={onToggle}
+      >
+        <div
+          className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+            isJobSearch ? 'translate-x-0 bg-blue-500' : 'translate-x-7 bg-gray-500'
+          }`}
+        />
+      </div>
+      <span className={`ml-3 text-lg ${!isJobSearch ? 'font-bold text-white' : 'text-gray-400'}`}>Query</span>
+    </div>
+  );
+};
+
+const Dashboard: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upload'>('job-search');
   const [cvContent, setCvContent] = useState<string>('');
   const [isJobSearch, setIsJobSearch] = useState(true);
 
@@ -26,15 +47,11 @@ const DashbosetCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upl
         return (
           <div className="space-y-6 flex items-center flex-col">
             <ToggleSwitch isJobSearch={isJobSearch} onToggle={toggleJobSearchView} />
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
+            <div className="bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl p-6">
               {isJobSearch ? (
-                <div>
                 <JobSearch updateCvCallback={updateCvCallback} changePageCallback={() => changePageCallback('dashboard')} />
-                </div>
               ) : (
-                <div>
                 <Query updateCvCallback={updateCvCallback} changePageCallback={() => changePageCallback('dashboard')} />
-                </div>
               )}
             </div>
           </div>
@@ -42,58 +59,20 @@ const DashbosetCurrentPage] = useState<'dashboard' | 'job-search' | 'content-upl
       case 'content-upload':
         return <ContentUpload />;
       default:
-        return (
-          <div className={animationClass}>
-            <MarkdownEditor initialText={cvContent} />
-          </div>
-        );
+        return <MarkdownEditor initialText={cvContent} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 animate-drop-fade">
-      <header className="text-white p-6">
-        <h1 className="text-center text-3xl font-bold">CV easy</h1>
-      </header>
+    <div className="min-h-screen bg-gray-900 text-gray-200">
+      <Navbar onNavigate={changePageCallback} />
 
-      {/* Navigation Section */}
-      <nav className="p-4 border border-gray-600">
-        <ul className="flex justify-around">
-          <li>
-            <button
-              onClick={() => changePageCallback('dashboard')}
-              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
-                currentPage === 'dashboard' ? 'bg-gray-600' : ''
-              }`}
-            >
-              Generated CV
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => changePageCallback('job-search')}
-              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
-                currentPage === 'job-search' ? 'bg-gray-600' : ''
-              }`}
-            >
-              Job Search
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => changePageCallback('content-upload')}
-              className={`text-white py-2 px-4 hover:bg-gray-900 border border-gray-600 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-gray-700 ${
-                currentPage === 'content-upload' ? 'bg-gray-600' : ''
-              }`}
-            >
-              Content Upload
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Main Content Area */}
-      <main className="p-6">{renderContent()}</main>
+      <main className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          {currentPage === 'dashboard' ? 'Generated CV' : currentPage === 'job-search' ? 'Job Search' : 'Content Upload'}
+        </h1>
+        {renderContent()}
+      </main>
     </div>
   );
 };

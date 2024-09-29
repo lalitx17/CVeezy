@@ -3,10 +3,6 @@ dotenv.config();
 
 const PERPLEXITY_API_KEY: string = process.env.PERPLEXITY_API_KEY || "";
 
-<<<<<<< HEAD
-export const perplexityQuery = async (context: string, resultType: string, company: string, title: string) => {
-
-=======
 export const perplexityQuery = async (
   question: string,
   context: string,
@@ -15,7 +11,6 @@ export const perplexityQuery = async (
   title: string
 ) => {
   console.log(resultType);
->>>>>>> a7e88ad (ui changed)
 
   const COVER_LETTER_PROMPT = `
     As an experienced cover letter writer, create a compelling cover letter based on the following information:

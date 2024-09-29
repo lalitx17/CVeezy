@@ -28,7 +28,7 @@ const Query: React.FC<QueryProps> = ({ updateCvCallback, changePageCallback }) =
   const handleGenerateCV = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/generate-cv', {
+      const response = await axios.post('/generate-cv', {
         content: inputText,
         userId: userId,
         company: company,

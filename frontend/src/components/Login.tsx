@@ -20,7 +20,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (username && password) {
       try {
-        const response = await fetch('http://localhost:3000/auth/login', {
+        const response = await fetch('/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (username && password && password === confirmPassword) {
       try {
-        const response = await fetch('http://localhost:3000/auth/register', {
+        const response = await fetch('/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -36,7 +36,8 @@ exports.perplexityQuery = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || "";
-const perplexityQuery = (context, resultType, company, title) => __awaiter(void 0, void 0, void 0, function* () {
+const perplexityQuery = (question, context, resultType, company, title) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(resultType);
     const COVER_LETTER_PROMPT = `
     As an experienced cover letter writer, create a compelling cover letter based on the following information:
     
@@ -79,7 +80,7 @@ const perplexityQuery = (context, resultType, company, title) => __awaiter(void 
                     },
                     {
                         role: "user",
-                        content: (resultType == "COVER_LETTER") ? COVER_LETTER_PROMPT : ESSAY_PROMPT,
+                        content: resultType == "COVER_LETTER" ? COVER_LETTER_PROMPT : ESSAY_PROMPT,
                     },
                 ],
                 temperature: 0.2,

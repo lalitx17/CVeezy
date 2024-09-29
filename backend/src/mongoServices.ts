@@ -142,7 +142,7 @@ export async function searchSimilarDocuments(
 export async function generateCV(content: string, userId: string, company: string, title: string, resultType: string){
   const contents = await searchSimilarDocuments(content, userId);
   if(contents.length > 0){
-  const result = await perplexityQuery(contents.join(" "), resultType, company, title);
+  const result = await perplexityQuery(content, contents.join(" "), resultType, company, title);
   return result;
   }
 }

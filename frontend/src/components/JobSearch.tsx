@@ -31,12 +31,12 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:3000/jobs`,
+        `/jobs`,
         {
           q: jobQuery
         }
       );
-      setResults(response.data.data); // Assuming the response contains job results
+      setResults(response.data.data);
     } catch (error) {
       console.error("Error fetching job results:", error);
     } finally {
@@ -54,7 +54,7 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
   const handleGenerateCV = async () => {
     setLoading(true); // Start loading when request starts
     try {
-      const response = await axios.post('http://localhost:3000/generate-cv', {
+      const response = await axios.post('/generate-cv', {
         content: selectedJob.description,
         userId: userId,
         company: selectedJob.company,
@@ -109,7 +109,7 @@ const JobSearch: React.FC<JobSearchProps> = ({ updateCvCallback, changePageCallb
                 <p className="text-gray-300 mb-3">{job.company}</p>
                 <p className="text-gray-400 mb-4 line-clamp-3">{job.description}</p>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-green-400 font-semibold">Salary: ${job.min_annual_salary.toLocaleString()}</span>
+                  <span className="text-green-400 font-semibold">Salary: ${job.min_annual_salary}</span>
                   <span className="text-blue-400 hover:underline">View Details</span>
                 </div>
               </li>

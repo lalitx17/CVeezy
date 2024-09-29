@@ -166,7 +166,7 @@ function generateCV(content, userId, company, title, resultType) {
     return __awaiter(this, void 0, void 0, function* () {
         const contents = yield searchSimilarDocuments(content, userId);
         if (contents.length > 0) {
-            const result = yield (0, perplexityApi_1.perplexityQuery)(contents.join(" "), resultType, company, title);
+            const result = yield (0, perplexityApi_1.perplexityQuery)(content, contents.join(" "), resultType, company, title);
             return result;
         }
     });

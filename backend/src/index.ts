@@ -18,7 +18,7 @@ app.use(express.json());
 const port = process.env.PORT || 3000;
 
 
-// app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
+app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
 app.use(vectorRouter);
 app.use(jobsRouter);
 app.use(pdfRouter);
