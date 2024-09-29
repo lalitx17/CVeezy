@@ -4,8 +4,8 @@ import * as dotenv from "dotenv";
 import cors from 'cors';
 import { client } from './mongoServices';
 import { perplexityQuery } from "./perplexityApi"
-import { readJsonFile, fetchJobs } from "./jobsApi"
-import { generatePDF } from "./exportPdf"
+import jobsRouter from "./jobsApi"
+import pdfRouter from "./exportPdf"
 import vectorRouter from './vectorConnector';
 import { createUserContentsCollection } from './createCollection';
 
@@ -23,6 +23,9 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 app.use(vectorRouter);
+app.use(jobsRouter);
+app.use(pdfRouter);
+
   app.post('/register', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -87,27 +90,6 @@ app.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/jobs', async (req: Request, res: Response) => {
-    const q = req.query.q
-    if (!q) {
-      res.status(400).json({ message: 'Query required' });
-      return
-    }
-    const result = await readJsonFile()
-    res.json(result)
-});
-
-app.post('/export-pdf', async (req: Request, res: Response) => {
-  const filename : string = "./test.pdf"
-  const { inputText } = req.body;
-  if(!inputText){
-    res.status(400).json({message: "Content is required"})
-    return
-  }
-  console.log(inputText)
-  const pdfBytes = await generatePDF(inputText, filename);
-  res.send(Buffer.from(pdfBytes));
-})
 
 
 app.listen(port, () => {

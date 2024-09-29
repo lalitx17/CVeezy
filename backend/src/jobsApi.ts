@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import express, { Request, Response, Router, RequestHandler, NextFunction } from 'express';
 
-export const readJsonFile = (): Promise<any> => {
+const readJsonFile = (): Promise<any> => {
   const filePath = path.join(__dirname, 'cache.json');
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err : any, data : string) => {
@@ -18,7 +19,7 @@ export const readJsonFile = (): Promise<any> => {
   });
 };
 
-export const fetchJobs = async (apiKey: string) => {
+const fetchJobs = async (apiKey: string) => {
   try {
     const response = await fetch('https://api.theirstack.com/v1/jobs/search', {
       method: 'POST',
@@ -131,5 +132,18 @@ export const fetchJobs = async (apiKey: string) => {
   }
 };
 
+const jobsRouter: Router = express.Router();
 
+const fetchJobsHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const q = req.query.q
+    if (!q) {
+      res.status(400).json({ message: 'Query required' });
+      return
+    }
+    const result = await readJsonFile()
+    res.json(result)
+};
 
+jobsRouter.post("/jobs", fetchJobsHandler)
+
+export default jobsRouter;

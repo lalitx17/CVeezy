@@ -31,10 +31,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchJobs = exports.readJsonFile = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const express_1 = __importDefault(require("express"));
 const readJsonFile = () => {
     const filePath = path.join(__dirname, 'cache.json');
     return new Promise((resolve, reject) => {
@@ -52,7 +55,6 @@ const readJsonFile = () => {
         });
     });
 };
-exports.readJsonFile = readJsonFile;
 const fetchJobs = (apiKey) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield fetch('https://api.theirstack.com/v1/jobs/search', {
@@ -164,4 +166,15 @@ const fetchJobs = (apiKey) => __awaiter(void 0, void 0, void 0, function* () {
         console.error('Fetch error:', error.message);
     }
 });
-exports.fetchJobs = fetchJobs;
+const jobsRouter = express_1.default.Router();
+const fetchJobsHandler = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const q = req.query.q;
+    if (!q) {
+        res.status(400).json({ message: 'Query required' });
+        return;
+    }
+    const result = yield readJsonFile();
+    res.json(result);
+});
+jobsRouter.post("/jobs", fetchJobsHandler);
+exports.default = jobsRouter;

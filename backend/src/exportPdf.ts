@@ -1,7 +1,8 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import * as fs from 'fs';
+import express, { Request, Response, Router, RequestHandler, NextFunction } from 'express';
 
-export const generatePDF = async (markdownText: string, outputPath: string) => {
+const generatePDF = async (markdownText: string) => {
   const pdfDoc = await PDFDocument.create();
   const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
@@ -63,3 +64,22 @@ const splitTextIntoLines = (
 
   return lines;
 };
+
+
+const pdfRouter: Router = express.Router();
+
+const exportPdfHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const { inputText } = req.body;
+    if(!inputText){
+      res.status(400).json({message: "Content is required"})
+      return
+    }
+    const pdfBytes = await generatePDF(inputText);
+    res.status(200).set({
+      'Content-Type': 'application/pdf',
+    }).send(Buffer.from(pdfBytes));
+};
+
+pdfRouter.post("/export-pdf", exportPdfHandler)
+
+export default pdfRouter;
